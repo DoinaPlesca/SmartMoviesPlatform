@@ -1,6 +1,24 @@
-namespace DefaultNamespace;
+using Microsoft.AspNetCore.Mvc;
+using MovieService.Application.Services;
 
-public class GenresController
+namespace MovieService.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class GenresController : ControllerBase
 {
-    
+    private readonly IMovieService _movieService;
+
+    public GenresController(IMovieService movieService)
+    {
+        _movieService = movieService;
+    }
+
+    //  api/genres
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var genres = await _movieService.GetAllGenresAsync();
+        return Ok(genres);
+    }
 }

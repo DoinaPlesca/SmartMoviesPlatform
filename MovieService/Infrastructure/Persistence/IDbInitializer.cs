@@ -1,6 +1,7 @@
-namespace DefaultNamespace;
-
-public class IDbInitializer
+namespace MovieService.Infrastructure.Persistence
 {
-    
+    public interface IDbInitializer
+    {
+        Task InitializeAsync(MovieDbContext context);
+    }
 }

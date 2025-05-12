@@ -1,6 +1,9 @@
 namespace MovieService.Application.DTOs;
-public class CreateMovieDto
+
+public class UpdateMovieDto
 {
+    public int Id { get; set; } 
+
     public string Title { get; set; } = null!;
     public string Description { get; set; }
     public DateTime ReleaseDate { get; set; }
