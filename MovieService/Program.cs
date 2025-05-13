@@ -2,8 +2,10 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MovieService.Application;
+using MovieService.Application.Common.Interfaces;
 using MovieService.Application.Services;
 using MovieService.Infrastructure.Persistence;
+using MovieService.Infrastructure.Persistence.Seeders;
 using MovieService.Infrastructure.Storage;
 using MovieService.Middleware;
 
@@ -24,6 +26,7 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(postgresConnectionString));
 
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+builder.Services.AddScoped<IDataSeeder, GenreSeeder>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IMovieService, MovieService.Application.Services.MovieService>();
 builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
@@ -59,9 +62,8 @@ app.UseSwaggerUI();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<MovieDbContext>();
     var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-    await initializer.InitializeAsync(dbContext);
+    await initializer.InitializeAsync();
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

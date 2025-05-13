@@ -1,4 +1,3 @@
-using MovieService.Application.DTOs;
 using MovieService.Domain.Entities;
 
 namespace MovieService.Infrastructure.Persistence;

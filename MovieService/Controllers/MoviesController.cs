@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieService.Application.DTOs;
+using MovieService.Application.DTOs.Wrappers;
 using MovieService.Application.Services;
 
 namespace MovieService.Controllers;
@@ -19,26 +20,34 @@ public class MoviesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] MovieQueryParameters query)
     {
-        var movies = await _movieService.GetAllAsync(query);
-        return Ok(movies);
-    }
+        var (movies, totalCount) = await _movieService.GetAllAsync(query);
 
+        return Ok(PagedResponse<IEnumerable<MovieDto>>.Ok(
+            movies,
+            totalCount,
+            query.Page,
+            query.PageSize
+        ));
+    }
+    
     // api/movies/5
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var movie = await _movieService.GetByIdAsync(id);
-        if (movie == null) return NotFound();
-        return Ok(movie);
+        if (movie == null)
+            return NotFound(ApiResponse<string>.Fail("Movie not found", 404));
+        
+        return Ok(ApiResponse<MovieDto>.Ok(movie));
     }
 
     //  api/movies
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Create([FromForm] CreateMovieDto dto)
+    public async Task<IActionResult> CreateMovie([FromForm] CreateMovieDto dto)
     {
         var created = await _movieService.CreateAsync(dto);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        return Ok(ApiResponse<MovieDto>.Ok(created, 201));
     }
 
     // api/movies
@@ -46,8 +55,8 @@ public class MoviesController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateMovieDto dto)
     {
-        var updatedMovie = await _movieService.UpdateAsync(id, dto);
-        return Ok(updatedMovie);
+        var updated= await _movieService.UpdateAsync(id, dto);
+        return Ok(ApiResponse<MovieDto>.Ok(updated));
     }
 
 
@@ -56,7 +65,10 @@ public class MoviesController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _movieService.DeleteAsync(id);
-        return deleted ? NoContent() : NotFound();
+        if (!deleted)
+            return NotFound(ApiResponse<string>.Fail("Movie not found", 404));
+
+        return Ok(ApiResponse<string>.Ok("Movie deleted successfully", 200));
     }
 
     //  api/movies/genre/3
@@ -64,6 +76,6 @@ public class MoviesController : ControllerBase
     public async Task<IActionResult> GetByGenre(int genreId)
     {
         var movies = await _movieService.GetByGenreAsync(genreId);
-        return Ok(movies);
+        return Ok(ApiResponse<IEnumerable<MovieDto>>.Ok(movies));
     }
 }

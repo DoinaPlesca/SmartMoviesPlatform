@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using MovieService.Application.DTOs;
+using MovieService.Application.DTOs.Wrappers;
 using MovieService.Application.Services;
 
 namespace MovieService.Controllers;
@@ -19,6 +21,6 @@ public class GenresController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var genres = await _movieService.GetAllGenresAsync();
-        return Ok(genres);
+        return Ok(ApiResponse<IEnumerable<GenreDto>>.Ok(genres));
     }
 }
