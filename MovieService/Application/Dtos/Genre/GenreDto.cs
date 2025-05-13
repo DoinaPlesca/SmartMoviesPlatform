@@ -1,4 +1,4 @@
-namespace MovieService.Application.DTOs;
+namespace MovieService.Application.Dtos.Genre;
 
 public class GenreDto
 {

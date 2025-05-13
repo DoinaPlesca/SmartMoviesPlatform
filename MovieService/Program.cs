@@ -1,10 +1,13 @@
 
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using MovieService.Application;
 using MovieService.Application.Common.Interfaces;
 using MovieService.Application.Services;
+using MovieService.Infrastructure.Messaging;
 using MovieService.Infrastructure.Persistence;
+using MovieService.Infrastructure.Persistence.Initialization;
+using MovieService.Infrastructure.Persistence.Interfaces;
+using MovieService.Infrastructure.Persistence.Repositories;
 using MovieService.Infrastructure.Persistence.Seeders;
 using MovieService.Infrastructure.Storage;
 using MovieService.Middleware;
@@ -30,7 +33,7 @@ builder.Services.AddScoped<IDataSeeder, GenreSeeder>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IMovieService, MovieService.Application.Services.MovieService>();
 builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
-
+builder.Services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
 
 
 builder.Services.AddAutoMapper(typeof(Program));

@@ -2,13 +2,14 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using MovieService.Application;
+using MovieService.Application.Common.Interfaces;
 
 namespace MovieService.Infrastructure.Storage;
 public class BlobStorageService : IBlobStorageService
 {
     private readonly BlobContainerClient _containerClient;
-    private readonly string _accountName;
-    private readonly string _accountKey;
+    private readonly string? _accountName;
+    private readonly string? _accountKey;
 
     public BlobStorageService(IConfiguration configuration)
     {

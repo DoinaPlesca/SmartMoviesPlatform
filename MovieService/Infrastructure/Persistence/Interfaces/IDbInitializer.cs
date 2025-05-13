@@ -1,4 +1,4 @@
-namespace MovieService.Infrastructure.Persistence
+namespace MovieService.Infrastructure.Persistence.Interfaces
 {
     public interface IDbInitializer
     {

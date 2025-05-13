@@ -1,5 +1,7 @@
 using AutoMapper;
 using MovieService.Application.DTOs;
+using MovieService.Application.Dtos.Genre;
+using MovieService.Application.Dtos.Movie;
 using MovieService.Domain.Entities;
 
 namespace MovieService.Infrastructure.Mappings;

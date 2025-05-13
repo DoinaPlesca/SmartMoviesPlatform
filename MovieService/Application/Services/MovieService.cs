@@ -1,9 +1,12 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using MovieService.Application.DTOs;
+using MovieService.Application.Common.Interfaces;
+using MovieService.Application.Dtos.Genre;
+using MovieService.Application.Dtos.Movie;
 using MovieService.Application.Exceptions_;
 using MovieService.Domain.Entities;
-using MovieService.Infrastructure.Persistence;
+using MovieService.Domain.Events;
+using MovieService.Infrastructure.Persistence.Interfaces;
 
 namespace MovieService.Application.Services;
 
@@ -12,12 +15,14 @@ public class MovieService : IMovieService
     private readonly IMovieRepository _repository;
     private readonly IMapper _mapper;
     private readonly IBlobStorageService _blobStorage;
+    private readonly ILogger<MovieService> _logger;
 
-    public MovieService(IMovieRepository repository, IMapper mapper, IBlobStorageService blobStorage)
+    public MovieService(IMovieRepository repository, IMapper mapper, IBlobStorageService blobStorage, ILogger<MovieService> logger)
     {
         _repository = repository;
         _mapper = mapper;
         _blobStorage = blobStorage;
+        _logger = logger;
     }
 
     public async Task<(IEnumerable<MovieDto> Movies, int TotalCount)> GetAllAsync(MovieQueryParameters query)
@@ -74,7 +79,11 @@ public class MovieService : IMovieService
         var genre = await _repository.GetGenreByIdAsync(dto.GenreId);
         if (genre == null)
             throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
-
+        
+        movie.Genre = genre;
+        
+        movie.AddCreatedEvent();
+        _logger.LogInformation("MovieCreatedEvent added for Movie ID: {MovieId}", movie.Id);
         
         var created = await _repository.CreateAsync(movie);
         return _mapper.Map<MovieDto>(created);
@@ -93,21 +102,28 @@ public class MovieService : IMovieService
         {
             var posterUrl = await _blobStorage.UploadFileAsync(dto.PosterFile, $"posters/{Guid.NewGuid()}_{dto.PosterFile.FileName}");
             existing.PosterUrl = posterUrl;
+            existing.AddPosterReplacedEvent();
+            _logger.LogInformation("PosterReplacedEvent added for Movie ID: {MovieId}", existing.Id);
         }
 
         if (dto.VideoFile != null)
         {
             var videoUrl = await _blobStorage.UploadFileAsync(dto.VideoFile, $"videos/{Guid.NewGuid()}_{dto.VideoFile.FileName}");
             existing.VideoUrl = videoUrl;
+            existing.AddVideoFileUpdatedEvent();
+            _logger.LogInformation("VideoFileUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
         }
-
+        existing.UpdateRatingIfChanged(dto.Rating);
+        _logger.LogInformation("MovieRatedEvent added for Movie ID: {MovieId} if rating changed", existing.Id);
+        
         existing.Title = dto.Title;
         existing.Description = dto.Description;
         existing.ReleaseDate = dto.ReleaseDate;
-        existing.Rating = dto.Rating;
         existing.GenreId = dto.GenreId;
 
+        existing.AddUpdatedEvent();
         await _repository.UpdateAsync(existing);
+        _logger.LogInformation("MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
         return _mapper.Map<MovieDto>(existing);
     }
 
@@ -121,6 +137,9 @@ public class MovieService : IMovieService
         await _blobStorage.DeleteFileAsync(movie.PosterUrl);
         await _blobStorage.DeleteFileAsync(movie.VideoUrl);
 
+        movie.AddDeletedEvent();
+        _logger.LogInformation("MovieDeletedEvent added for Movie ID: {MovieId}", movie.Id);
+        
         await _repository.DeleteAsync(id);
         return true;
     }
@@ -131,7 +150,8 @@ public class MovieService : IMovieService
         return _mapper.Map<IEnumerable<GenreDto>>(genres);
     }
 
-    public async Task<IEnumerable<MovieDto>> GetByGenreAsync(int genreId)
+    
+    public async Task<IEnumerable<MovieDto>> GetMovieByGenreAsync(int genreId)
     {
         var genre = await _repository.GetGenreByIdAsync(genreId);
         if (genre == null)
