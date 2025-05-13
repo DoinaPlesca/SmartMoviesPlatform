@@ -1,4 +1,4 @@
-using MovieService.Domain.Events;
+using SharedKernel.Events;
 
 namespace MovieService.Domain.Entities
 {
@@ -24,17 +24,34 @@ namespace MovieService.Domain.Entities
         
         public void AddCreatedEvent()
         {
-            AddDomainEvent(new MovieCreatedEvent(this));
+            AddDomainEvent(new MovieCreatedEvent(
+                Id,
+                Title,
+                Description,
+                ReleaseDate,
+                Rating,
+                Genre?.Name ?? string.Empty,
+                VideoUrl,
+                PosterUrl
+            ));
         }
+
         
         public void AddUpdatedEvent()
         {
-            AddDomainEvent(new MovieUpdatedEvent(this));
+            AddDomainEvent(new MovieUpdatedEvent(
+                Id,
+                Title,
+                Description,
+                Genre?.Name ?? string.Empty,
+                ReleaseDate
+            ));
         }
+
 
         public void AddDeletedEvent()
         {
-            AddDomainEvent(new MovieDeletedEvent(this.Id));
+            AddDomainEvent(new MovieDeletedEvent(Id));
         }
         
         public void AddPosterReplacedEvent()

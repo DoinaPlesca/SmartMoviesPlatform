@@ -10,7 +10,8 @@ using MovieService.Infrastructure.Persistence.Interfaces;
 using MovieService.Infrastructure.Persistence.Repositories;
 using MovieService.Infrastructure.Persistence.Seeders;
 using MovieService.Infrastructure.Storage;
-using MovieService.Middleware;
+using SharedKernel.Middleware;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

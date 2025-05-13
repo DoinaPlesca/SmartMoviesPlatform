@@ -1,5 +1,5 @@
 using MovieService.Application.Common.Interfaces;
-using MovieService.Domain.Events;
+using SharedKernel.Events;
 
 namespace MovieService.Infrastructure.Messaging;
 

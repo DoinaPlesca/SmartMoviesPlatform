@@ -3,10 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MovieService.Application.Common.Interfaces;
 using MovieService.Application.Dtos.Genre;
 using MovieService.Application.Dtos.Movie;
-using MovieService.Application.Exceptions_;
 using MovieService.Domain.Entities;
-using MovieService.Domain.Events;
 using MovieService.Infrastructure.Persistence.Interfaces;
+using SharedKernel.Exceptions;
 
 namespace MovieService.Application.Services;
 
@@ -37,8 +36,7 @@ public class MovieService : IMovieService
                 m.Title.ToLower().Contains(term) ||
                 m.Description.ToLower().Contains(term));
         }
-
-        // pagination
+        
         var totalCount = await moviesQuery.CountAsync();
 
         // sort
