@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MovieService.Application.DTOs;
+using MovieService.Application.Exceptions_;
 using MovieService.Domain.Entities;
 using MovieService.Infrastructure.Persistence;
 
@@ -52,7 +53,9 @@ public class MovieService : IMovieService
     public async Task<MovieDto?> GetByIdAsync(int id)
     {
         var movie = await _repository.GetByIdAsync(id);
-        return movie == null ? null : _mapper.Map<MovieDto>(movie);
+        if (movie == null)
+            throw new NotFoundException($"Movie with ID {id} not found.");
+        return _mapper.Map<MovieDto>(movie);
     }
 
     public async Task<MovieDto> CreateAsync(CreateMovieDto dto)
@@ -71,7 +74,7 @@ public class MovieService : IMovieService
     public async Task<MovieDto> UpdateAsync(int id, UpdateMovieDto dto)
     {
         var existing = await _repository.GetByIdAsync(id);
-        if (existing == null) throw new Exception("Movie not found.");
+        if (existing == null) throw new NotFoundException("Movie not found.");
 
         if (dto.PosterFile != null)
         {
@@ -99,6 +102,9 @@ public class MovieService : IMovieService
     public async Task<bool> DeleteAsync(int id)
     {
         var movie = await _repository.GetByIdAsync(id);
+        
+        if (movie == null)
+            throw new NotFoundException("Movie not found.");
         
         await _blobStorage.DeleteFileAsync(movie.PosterUrl);
         await _blobStorage.DeleteFileAsync(movie.VideoUrl);
