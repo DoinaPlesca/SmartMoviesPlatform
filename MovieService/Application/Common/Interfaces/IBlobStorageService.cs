@@ -1,4 +1,4 @@
-namespace MovieService.Application;
+namespace MovieService.Application.Common.Interfaces;
 
 public interface IBlobStorageService
 {

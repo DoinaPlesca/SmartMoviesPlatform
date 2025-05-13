@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MovieService.Application.DTOs;
+using MovieService.Application.Dtos.Movie;
 using MovieService.Application.DTOs.Wrappers;
 using MovieService.Application.Services;
 
@@ -75,7 +75,7 @@ public class MoviesController : ControllerBase
     [HttpGet("genre/{genreId}")]
     public async Task<IActionResult> GetByGenre(int genreId)
     {
-        var movies = await _movieService.GetByGenreAsync(genreId);
+        var movies = await _movieService.GetMovieByGenreAsync(genreId);
         return Ok(ApiResponse<IEnumerable<MovieDto>>.Ok(movies));
     }
 }

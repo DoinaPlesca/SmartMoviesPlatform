@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using MovieService.Application.DTOs;
 using MovieService.Domain.Entities;
+using MovieService.Infrastructure.Persistence.Interfaces;
 
-namespace MovieService.Infrastructure.Persistence;
+namespace MovieService.Infrastructure.Persistence.Repositories;
 
 public class MovieRepository : IMovieRepository
 {

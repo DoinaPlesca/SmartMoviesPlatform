@@ -1,7 +1,7 @@
 using MovieService.Application.Common.Interfaces;
+using MovieService.Infrastructure.Persistence.Interfaces;
 
-
-namespace MovieService.Infrastructure.Persistence;
+namespace MovieService.Infrastructure.Persistence.Initialization;
 
 public class DbInitializer : IDbInitializer
 {

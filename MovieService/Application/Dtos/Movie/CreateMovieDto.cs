@@ -1,8 +1,8 @@
-namespace MovieService.Application.DTOs;
+namespace MovieService.Application.Dtos.Movie;
 public class CreateMovieDto
 {
     public string Title { get; set; } = null!;
-    public string Description { get; set; }
+    public  required string Description { get; set; }
     public DateTime ReleaseDate { get; set; }
     public decimal Rating { get; set; }
     public int GenreId { get; set; }

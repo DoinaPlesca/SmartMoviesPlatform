@@ -1,4 +1,4 @@
-namespace MovieService.Application.DTOs;
+namespace MovieService.Application.Dtos.Movie;
 
 public class MovieQueryParameters
 {
