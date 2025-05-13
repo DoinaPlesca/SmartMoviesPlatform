@@ -1,8 +1,10 @@
 
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using MovieService.Application;
 using MovieService.Application.Services;
 using MovieService.Infrastructure.Persistence;
+using MovieService.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,8 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IMovieService, MovieService.Application.Services.MovieService>();
+builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+
 
 
 builder.Services.AddAutoMapper(typeof(Program));
@@ -31,15 +35,26 @@ builder.Services
     .AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
+
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SupportNonNullableReferenceTypes();
+});
 
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 using (var scope = app.Services.CreateScope())
 {
@@ -50,5 +65,7 @@ using (var scope = app.Services.CreateScope())
 
 
 app.UseHttpsRedirection();
-
-await app.RunAsync();
+//app.UseMiddleware<ErrorHandlerMiddleware>();
+//app.UseAuthorization();
+app.MapControllers();
+app.Run();

@@ -5,7 +5,7 @@ namespace MovieService.Infrastructure.Persistence;
 
 public interface IMovieRepository
 {
-    Task<IEnumerable<Movie>> GetAllAsync(MovieQueryParameters query);
+    Task<IQueryable<Movie>> GetQueryableAsync();
     Task<Movie?> GetByIdAsync(int id);
     Task<Movie> CreateAsync(Movie movie);
     Task UpdateAsync(Movie movie);

@@ -34,26 +34,29 @@ public class MoviesController : ControllerBase
 
     //  api/movies
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateMovieDto dto)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Create([FromForm] CreateMovieDto dto)
     {
         var created = await _movieService.CreateAsync(dto);
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
     // api/movies
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateMovieDto dto)
+    [HttpPut("{id}")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Update(int id, [FromForm] UpdateMovieDto dto)
     {
-        await _movieService.UpdateAsync(dto);
-        return NoContent();
+        var updatedMovie = await _movieService.UpdateAsync(id, dto);
+        return Ok(updatedMovie);
     }
+
 
     //  api/movies/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _movieService.DeleteAsync(id);
-        return NoContent();
+        var deleted = await _movieService.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 
     //  api/movies/genre/3

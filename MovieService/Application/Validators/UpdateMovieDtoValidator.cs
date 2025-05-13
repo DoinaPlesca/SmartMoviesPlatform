@@ -27,13 +27,19 @@ public class UpdateMovieDtoValidator : AbstractValidator<UpdateMovieDto>
             .LessThanOrEqualTo(DateTime.Today).WithMessage("Release date must be less than today's date.")
             .WithErrorCode("RELEASE_DATE_ERROR");
 
-        RuleFor(x => x.VideoUrl)
-            .NotEmpty().WithMessage("Video URL is required.")
-            .WithErrorCode("VIDEO_URL_ERROR");
+        RuleFor(x => x.PosterFile!.Length)
+            .GreaterThan(0).WithMessage("Poster file cannot be empty.");
 
-        RuleFor(x => x.PosterUrl)
-            .NotEmpty().WithMessage("Poster URL is required.")
-            .WithErrorCode("POSTER_URL_ERROR");
+        RuleFor(x => x.PosterFile!.ContentType)
+            .Must(type => type == "image/jpeg" || type == "image/png")
+            .WithMessage("Poster must be a JPEG or PNG.");
+        
+        RuleFor(x => x.VideoFile!.Length)
+            .GreaterThan(0).WithMessage("Video file cannot be empty.");
+
+        RuleFor(x => x.VideoFile!.ContentType)
+            .Must(type => type == "video/mp4")
+            .WithMessage("Video must be an MP4 file.");
         
     }
 }
