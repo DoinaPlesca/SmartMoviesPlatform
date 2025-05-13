@@ -6,6 +6,7 @@ public class CreateMovieDto
     public DateTime ReleaseDate { get; set; }
     public decimal Rating { get; set; }
     public int GenreId { get; set; }
-    public string VideoUrl { get; set; } = null!;
-    public string PosterUrl { get; set; } = null!;
+    
+    public IFormFile PosterFile { get; set; } = null!;
+    public IFormFile VideoFile { get; set; } = null!;
 }

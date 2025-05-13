@@ -13,48 +13,14 @@ public class MovieRepository : IMovieRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Movie>> GetAllAsync(MovieQueryParameters query)
+    public async Task<IQueryable<Movie>> GetQueryableAsync()
     {
-        var moviesQuery = _context.Movies
-            .Include(m => m.Genre)
-            .AsQueryable();
-
-        // search filter
-        if (!string.IsNullOrWhiteSpace(query.Search))
-        {
-            var searchTerm = query.Search.ToLower();
-            moviesQuery = moviesQuery.Where(m =>
-                m.Title.ToLower().Contains(searchTerm) ||
-                m.Description.ToLower().Contains(searchTerm));
-        }
-
-        // sorting
-        moviesQuery = query.SortBy?.ToLower() switch
-        {
-            "rating" => query.SortDescending
-                ? moviesQuery.OrderByDescending(m => m.Rating)
-                : moviesQuery.OrderBy(m => m.Rating),
-
-            "releasedate" => query.SortDescending
-                ? moviesQuery.OrderByDescending(m => m.ReleaseDate)
-                : moviesQuery.OrderBy(m => m.ReleaseDate),
-
-            "newest" => moviesQuery.OrderByDescending(m => m.ReleaseDate),
-
-            _ => query.SortDescending
-                ? moviesQuery.OrderByDescending(m => m.Title)
-                : moviesQuery.OrderBy(m => m.Title)
-        };
-
-        // pagination
-        var skip = (query.Page - 1) * query.PageSize;
-
-        return await moviesQuery
-            .Skip(skip)
-            .Take(query.PageSize)
-            .ToListAsync();
+        return await Task.FromResult(
+            _context.Movies
+                .Include(m => m.Genre)
+                .AsNoTracking()
+        );
     }
-
 
     public async Task<Movie?> GetByIdAsync(int id)
     {

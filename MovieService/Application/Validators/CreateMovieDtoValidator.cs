@@ -24,12 +24,14 @@ public class CreateMovieDtoValidator : AbstractValidator<CreateMovieDto>
             .LessThanOrEqualTo(DateTime.Today).WithMessage("Release date must be less than today's date.")
             .WithErrorCode("RELEASE_DATE_ERROR");
         
-        RuleFor(x => x.VideoUrl)
-            .NotEmpty().WithMessage("Video URL is required.")
-            .WithErrorCode("VIDEO_URL_ERROR");
+        RuleFor(x => x.VideoFile)
+            .NotNull().WithMessage("Video file is required.")
+            .Must(f => f.Length > 0).WithMessage("Video file cannot be empty.")
+            .WithErrorCode("VIDEO_FILE_ERROR");
 
-        RuleFor(x => x.PosterUrl)
-            .NotEmpty().WithMessage("Poster URL is required.")
-            .WithErrorCode("POSTER_URL_ERROR");
+        RuleFor(x => x.PosterFile)
+            .NotNull().WithMessage("Poster image is required.")
+            .Must(f => f.Length > 0).WithMessage("Poster file cannot be empty.")
+            .WithErrorCode("POSTER_FILE_ERROR");
     }
 }
