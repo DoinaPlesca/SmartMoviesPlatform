@@ -5,6 +5,7 @@ using MovieService.Application;
 using MovieService.Application.Services;
 using MovieService.Infrastructure.Persistence;
 using MovieService.Infrastructure.Storage;
+using MovieService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,9 +64,8 @@ using (var scope = app.Services.CreateScope())
     await initializer.InitializeAsync(dbContext);
 }
 
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
-//app.UseMiddleware<ErrorHandlerMiddleware>();
 //app.UseAuthorization();
 app.MapControllers();
 app.Run();
