@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieService", "MovieService\MovieService.csproj", "{04867630-35D1-4389-B47D-D8EEF250D52B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WatchlistService", "WatchlistService\WatchlistService.csproj", "{31E2ACF0-E085-48DE-91DC-DE082A885AD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "SharedKernel\SharedKernel.csproj", "{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04867630-35D1-4389-B47D-D8EEF250D52B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04867630-35D1-4389-B47D-D8EEF250D52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04867630-35D1-4389-B47D-D8EEF250D52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04867630-35D1-4389-B47D-D8EEF250D52B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E2ACF0-E085-48DE-91DC-DE082A885AD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E2ACF0-E085-48DE-91DC-DE082A885AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E2ACF0-E085-48DE-91DC-DE082A885AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E2ACF0-E085-48DE-91DC-DE082A885AD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

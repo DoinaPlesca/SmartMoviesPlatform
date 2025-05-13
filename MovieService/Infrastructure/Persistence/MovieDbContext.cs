@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MovieService.Application.Common.Interfaces;
 using MovieService.Domain.Entities;
-using MovieService.Domain.Events;
 using MovieService.Infrastructure.Messaging;
+using SharedKernel.Events;
 
 namespace MovieService.Infrastructure.Persistence;
 

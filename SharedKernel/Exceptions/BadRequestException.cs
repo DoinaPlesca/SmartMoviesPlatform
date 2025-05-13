@@ -1,4 +1,4 @@
-namespace MovieService.Application.Exceptions_;
+namespace SharedKernel.Exceptions;
 
 public class BadRequestException : Exception
 {

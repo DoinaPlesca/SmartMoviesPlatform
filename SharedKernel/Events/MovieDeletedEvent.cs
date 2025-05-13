@@ -1,4 +1,4 @@
-namespace MovieService.Domain.Events;
+namespace SharedKernel.Events;
 
 public class MovieDeletedEvent : DomainEvent
 {

@@ -1,5 +1,4 @@
 using FluentValidation;
-using MovieService.Application.DTOs;
 using MovieService.Application.Dtos.Movie;
 
 namespace MovieService.Application.Validators;

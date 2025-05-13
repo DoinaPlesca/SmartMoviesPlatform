@@ -1,9 +1,10 @@
-
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using MovieService.Application.DTOs.Wrappers;
-using MovieService.Application.Exceptions_;
+using SharedKernel.Exceptions;
 
-namespace MovieService.Middleware;
+namespace SharedKernel.Middleware;
 
 public class ExceptionHandlingMiddleware
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MovieService.Domain.Events;
+namespace SharedKernel.Events;
 
 [NotMapped]//prevent EF core for mapping all subclasses
 public abstract class DomainEvent
