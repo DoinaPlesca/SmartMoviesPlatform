@@ -20,7 +20,7 @@ public class MovieService : IMovieService
         _blobStorage = blobStorage;
     }
 
-    public async Task<IEnumerable<MovieDto>> GetAllAsync(MovieQueryParameters query)
+    public async Task<(IEnumerable<MovieDto> Movies, int TotalCount)> GetAllAsync(MovieQueryParameters query)
     {
         var moviesQuery = await _repository.GetQueryableAsync();
 
@@ -33,6 +33,9 @@ public class MovieService : IMovieService
                 m.Description.ToLower().Contains(term));
         }
 
+        // pagination
+        var totalCount = await moviesQuery.CountAsync();
+
         // sort
         moviesQuery = query.SortBy?.ToLower() switch
         {
@@ -44,9 +47,10 @@ public class MovieService : IMovieService
 
         // pagination
         var skip = (query.Page - 1) * query.PageSize;
-        var pagedResult = await moviesQuery.Skip(skip).Take(query.PageSize).ToListAsync();
+        var pagedMovies = await moviesQuery.Skip(skip).Take(query.PageSize).ToListAsync();
 
-        return _mapper.Map<IEnumerable<MovieDto>>(pagedResult);
+        var mapped = _mapper.Map<IEnumerable<MovieDto>>(pagedMovies);
+        return (mapped, totalCount);
     }
 
 
@@ -67,6 +71,11 @@ public class MovieService : IMovieService
         movie.PosterUrl = posterUrl;
         movie.VideoUrl = videoUrl;
         
+        var genre = await _repository.GetGenreByIdAsync(dto.GenreId);
+        if (genre == null)
+            throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
+
+        
         var created = await _repository.CreateAsync(movie);
         return _mapper.Map<MovieDto>(created);
     }
@@ -75,6 +84,10 @@ public class MovieService : IMovieService
     {
         var existing = await _repository.GetByIdAsync(id);
         if (existing == null) throw new NotFoundException("Movie not found.");
+
+        var genre = await _repository.GetGenreByIdAsync(dto.GenreId);
+        if (genre == null)
+            throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
 
         if (dto.PosterFile != null)
         {
@@ -95,7 +108,6 @@ public class MovieService : IMovieService
         existing.GenreId = dto.GenreId;
 
         await _repository.UpdateAsync(existing);
-
         return _mapper.Map<MovieDto>(existing);
     }
 
@@ -121,6 +133,10 @@ public class MovieService : IMovieService
 
     public async Task<IEnumerable<MovieDto>> GetByGenreAsync(int genreId)
     {
+        var genre = await _repository.GetGenreByIdAsync(genreId);
+        if (genre == null)
+            throw new NotFoundException($"Genre with ID {genreId} not found.");
+
         var movies = await _repository.GetByGenreAsync(genreId);
         return _mapper.Map<IEnumerable<MovieDto>>(movies);
     }

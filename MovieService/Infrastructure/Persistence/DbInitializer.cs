@@ -1,40 +1,40 @@
-using Microsoft.EntityFrameworkCore;
-using MovieService.Domain.Entities;
+using MovieService.Application.Common.Interfaces;
 
-namespace MovieService.Infrastructure.Persistence
+
+namespace MovieService.Infrastructure.Persistence;
+
+public class DbInitializer : IDbInitializer
 {
-    public class DbInitializer : IDbInitializer
+    private readonly IEnumerable<IDataSeeder> _seeders;
+    private readonly MovieDbContext _context;
+    private readonly ILogger<DbInitializer> _logger;
+
+    public DbInitializer(IEnumerable<IDataSeeder> seeders, MovieDbContext context, ILogger<DbInitializer> logger)
     {
-        public async Task InitializeAsync(MovieDbContext context)
+        _seeders = seeders;
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task InitializeAsync()
+    {
+        _logger.LogInformation("Running database migrations...");
+        await _context.Database.EnsureCreatedAsync(); 
+        _logger.LogInformation("Database ready.");
+
+        foreach (var seeder in _seeders)
         {
-            await context.Database.MigrateAsync();
-
-            // Only seed if the table is empty
-            if (!context.Genres.Any())
+            try
             {
-                context.Genres.AddRange(
-                    new Genre { Name = "Action" },
-                    new Genre { Name = "Drama" },
-                    new Genre { Name = "Sci-Fi" },
-                    new Genre { Name = "Comedy" },
-                    new Genre { Name = "Horror" },
-                    new Genre { Name = "Romance" },
-                    new Genre { Name = "Thriller" },
-                    new Genre { Name = "Animation" },
-                    new Genre { Name = "Family" },
-                    new Genre { Name = "Mystery" },
-                    new Genre { Name = "Adventure" },
-                    new Genre { Name = "Fantasy" },
-                    new Genre { Name = "History" },
-                    new Genre { Name = "Music" },
-                    new Genre { Name = "War" },
-                    new Genre { Name = "Western" },
-                    new Genre { Name = "Documentary" }
-                        
-                );
-
-                await context.SaveChangesAsync();
+                await seeder.SeedAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while seeding data.");
+                throw;
             }
         }
+
+        _logger.LogInformation("All seeders completed.");
     }
 }

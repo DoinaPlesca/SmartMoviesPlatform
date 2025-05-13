@@ -2,6 +2,6 @@ namespace MovieService.Infrastructure.Persistence
 {
     public interface IDbInitializer
     {
-        Task InitializeAsync(MovieDbContext context);
+        Task InitializeAsync();
     }
 }

@@ -1,5 +1,6 @@
-using System.Net;
+
 using System.Text.Json;
+using MovieService.Application.DTOs.Wrappers;
 using MovieService.Application.Exceptions_;
 
 namespace MovieService.Middleware;
@@ -33,21 +34,21 @@ public class ExceptionHandlingMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = exception switch
         {
-            NotFoundException => (int)HttpStatusCode.NotFound,
-            BadRequestException => (int)HttpStatusCode.BadRequest,
-            ArgumentException => (int)HttpStatusCode.BadRequest,
-            KeyNotFoundException => (int)HttpStatusCode.NotFound,
-            _ => (int)HttpStatusCode.InternalServerError
+            NotFoundException => 404,
+            BadRequestException => 400,
+            _ => 500
         };
 
-        var response = new
+        var response = new ApiResponse<string>
         {
-            error = exception.Message,
-            status = context.Response.StatusCode,
-            traceId = context.TraceIdentifier
+            Success = false,
+            Data = null,
+            Message = exception.Message,
+            Status = context.Response.StatusCode
         };
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }
+
 
 }
