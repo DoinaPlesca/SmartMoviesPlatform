@@ -22,11 +22,12 @@ DotNetEnv.Env.Load();
 var envPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.FullName, ".env");
  DotNetEnv.Env.Load(envPath);
  
- var postgresConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                                ?? Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")
-                                ?? throw new Exception("No DB connection string found");
+var postgresConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
-Console.WriteLine($" Connecting to PostgreSQL with: {postgresConnectionString}");
+ if (string.IsNullOrWhiteSpace(postgresConnectionString))
+     throw new Exception("Environment variable DB_CONNECTION_STRING is missing!");
+
+Console.WriteLine($"Connecting to PostgreSQL with: {postgresConnectionString}");
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(postgresConnectionString));

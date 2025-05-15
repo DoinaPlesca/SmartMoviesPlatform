@@ -1,4 +1,6 @@
-namespace SharedKernel.Events;
+using SharedKernel.Events;
+
+namespace MovieService.Domain.InternalEvents;
 
 public class MovieRatedEvent : DomainEvent
 {

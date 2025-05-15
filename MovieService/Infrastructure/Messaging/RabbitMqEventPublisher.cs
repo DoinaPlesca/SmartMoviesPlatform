@@ -13,9 +13,9 @@ public class RabbitMqEventPublisher : IEventPublisher
     public RabbitMqEventPublisher(ILogger<RabbitMqEventPublisher> logger)
     {
         _logger = logger;
-        var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
+        var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST")
+                       ?? throw new InvalidOperationException("RABBITMQ_HOST environment variable is missing");
         
-        _logger.LogInformation("Connecting to RabbitMQ at {Host}", hostName);
         var factory = new ConnectionFactory() { HostName = hostName };
 
 

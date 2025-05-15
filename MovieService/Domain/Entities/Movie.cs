@@ -1,3 +1,5 @@
+
+using MovieService.Domain.InternalEvents;
 using SharedKernel.Events;
 
 namespace MovieService.Domain.Entities
@@ -22,6 +24,8 @@ namespace MovieService.Domain.Entities
 
         public string PosterUrl { get; set; } = null!;
         
+        
+        //  Shared event
         public void AddCreatedEvent()
         {
             AddDomainEvent(new MovieCreatedEvent(
@@ -54,6 +58,7 @@ namespace MovieService.Domain.Entities
             AddDomainEvent(new MovieDeletedEvent(Id));
         }
         
+        //  Internal events (used only inside MovieService)
         public void AddPosterReplacedEvent()
         {
             AddDomainEvent(new PosterReplacedEvent(Id, PosterUrl));
