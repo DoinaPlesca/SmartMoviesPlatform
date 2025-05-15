@@ -17,4 +17,7 @@ public class MongoContext
     }
 
     public IMongoCollection<Watchlist> Watchlists => _database.GetCollection<Watchlist>("Watchlists");
+    
+    //movies collection for local movie cache
+    public IMongoCollection<MovieItem> Movies => _database.GetCollection<MovieItem>("Movies");
 }

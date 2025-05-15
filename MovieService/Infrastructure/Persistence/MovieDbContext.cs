@@ -3,6 +3,8 @@ using MovieService.Application.Common.Interfaces;
 using MovieService.Domain.Entities;
 using MovieService.Infrastructure.Messaging;
 using SharedKernel.Events;
+using SharedKernel.Extensions;
+using SharedKernel.Interfaces;
 
 namespace MovieService.Infrastructure.Persistence;
 

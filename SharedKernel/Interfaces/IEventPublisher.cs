@@ -1,4 +1,4 @@
-namespace MovieService.Application.Common.Interfaces;
+namespace SharedKernel.Interfaces;
 
 public interface IEventPublisher
 {

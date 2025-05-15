@@ -5,7 +5,9 @@ using MovieService.Application.Dtos.Genre;
 using MovieService.Application.Dtos.Movie;
 using MovieService.Domain.Entities;
 using MovieService.Infrastructure.Persistence.Interfaces;
+using SharedKernel.Events;
 using SharedKernel.Exceptions;
+using SharedKernel.Interfaces;
 
 namespace MovieService.Application.Services;
 
@@ -15,13 +17,15 @@ public class MovieService : IMovieService
     private readonly IMapper _mapper;
     private readonly IBlobStorageService _blobStorage;
     private readonly ILogger<MovieService> _logger;
+    private readonly IEventPublisher _eventPublisher;
 
-    public MovieService(IMovieRepository repository, IMapper mapper, IBlobStorageService blobStorage, ILogger<MovieService> logger)
+    public MovieService(IMovieRepository repository, IMapper mapper, IBlobStorageService blobStorage, ILogger<MovieService> logger, IEventPublisher eventPublisher)
     {
         _repository = repository;
         _mapper = mapper;
         _blobStorage = blobStorage;
         _logger = logger;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<(IEnumerable<MovieDto> Movies, int TotalCount)> GetAllAsync(MovieQueryParameters query)
@@ -79,13 +83,15 @@ public class MovieService : IMovieService
             throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
         
         movie.Genre = genre;
-        
         movie.ReleaseDate = DateTime.SpecifyKind(movie.ReleaseDate, DateTimeKind.Utc);
-        movie.AddCreatedEvent();
-
-        _logger.LogInformation("MovieCreatedEvent added for Movie ID: {MovieId}", movie.Id);
-        
+       
         var created = await _repository.CreateAsync(movie);
+        
+        movie.AddCreatedEvent();
+        await DomainEventDispatcher.DispatchAndClearEventsAsync(movie, _eventPublisher, "movies");
+        
+        _logger.LogInformation("MovieCreatedEvent published for Movie ID: {MovieId}", movie.Id);
+
         return _mapper.Map<MovieDto>(created);
     }
 
@@ -113,19 +119,27 @@ public class MovieService : IMovieService
             existing.AddVideoFileUpdatedEvent();
             _logger.LogInformation("VideoFileUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
         }
+
         existing.UpdateRatingIfChanged(dto.Rating);
         _logger.LogInformation("MovieRatedEvent added for Movie ID: {MovieId} if rating changed", existing.Id);
-        
+
         existing.Title = dto.Title;
         existing.Description = dto.Description;
-        existing.ReleaseDate = DateTime.SpecifyKind(dto.ReleaseDate, DateTimeKind.Utc); 
+        existing.ReleaseDate = DateTime.SpecifyKind(dto.ReleaseDate, DateTimeKind.Utc);
         existing.GenreId = dto.GenreId;
+        existing.Genre = genre;
 
-        existing.AddUpdatedEvent();
+       
         await _repository.UpdateAsync(existing);
+        existing.AddUpdatedEvent(); 
+
+        await DomainEventDispatcher.DispatchAndClearEventsAsync(existing, _eventPublisher, "movies");
+
         _logger.LogInformation("MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
+
         return _mapper.Map<MovieDto>(existing);
     }
+
 
     public async Task<bool> DeleteAsync(int id)
     {
@@ -137,10 +151,11 @@ public class MovieService : IMovieService
         await _blobStorage.DeleteFileAsync(movie.PosterUrl);
         await _blobStorage.DeleteFileAsync(movie.VideoUrl);
 
-        movie.AddDeletedEvent();
-        _logger.LogInformation("MovieDeletedEvent added for Movie ID: {MovieId}", movie.Id);
-        
         await _repository.DeleteAsync(id);
+        
+        movie.AddDeletedEvent();
+        await DomainEventDispatcher.DispatchAndClearEventsAsync(movie, _eventPublisher, "movies");
+        _logger.LogInformation("MovieDeletedEvent added for Movie ID: {MovieId}", movie.Id);
         return true;
     }
 

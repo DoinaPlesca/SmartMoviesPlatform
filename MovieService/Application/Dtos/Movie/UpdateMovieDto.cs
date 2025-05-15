@@ -2,9 +2,8 @@ namespace MovieService.Application.Dtos.Movie;
 
 public class UpdateMovieDto
 {
-    public int Id { get; set; } 
 
-    public string Title { get; set; } = null!;
+    public  required string Title { get; set; } 
     public required string Description { get; set; }
     public DateTime ReleaseDate { get; set; }
     public decimal Rating { get; set; }

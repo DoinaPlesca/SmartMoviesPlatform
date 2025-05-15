@@ -1,4 +1,4 @@
-namespace MovieService.Application.DTOs.Wrappers;
+namespace SharedKernel.Wrappers;
 
 public class ApiResponse<T>
 {

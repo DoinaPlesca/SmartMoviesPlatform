@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using MovieService.Application.DTOs.Wrappers;
 using SharedKernel.Exceptions;
+using SharedKernel.Wrappers;
 
 namespace SharedKernel.Middleware;
 

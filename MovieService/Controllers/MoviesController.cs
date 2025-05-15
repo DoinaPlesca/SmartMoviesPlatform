@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieService.Application.Dtos.Movie;
-using MovieService.Application.DTOs.Wrappers;
 using MovieService.Application.Services;
+using SharedKernel.Wrappers;
 
 namespace MovieService.Controllers;
 

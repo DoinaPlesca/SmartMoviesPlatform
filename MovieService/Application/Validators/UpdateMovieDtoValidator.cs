@@ -1,5 +1,4 @@
 using FluentValidation;
-using MovieService.Application.DTOs;
 using MovieService.Application.Dtos.Movie;
 
 namespace MovieService.Application.Validators;
@@ -8,10 +7,10 @@ public class UpdateMovieDtoValidator : AbstractValidator<UpdateMovieDto>
 {
     public UpdateMovieDtoValidator()
     {
-        RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Movie ID is required.")
-            .WithErrorCode("ID_ERROR");
-        
+        // RuleFor(x => x.Id)
+        //     .GreaterThan(0).WithMessage("Movie ID is required.")
+        //     .WithErrorCode("ID_ERROR");
+        //
         RuleFor(x => x.Title)
             .NotEmpty().MaximumLength(100).WithMessage("Title must be less than 100 characters.")
             .WithErrorCode("TITLE_ERROR");

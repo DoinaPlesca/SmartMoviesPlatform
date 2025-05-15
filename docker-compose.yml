@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file:
+      - .env
     networks:
       - smart_movie_network
     volumes:
@@ -69,23 +71,24 @@ services:
     networks:
       - smart_movie_network
 
-#  
-#  watchlist-service:
-#    build:
-#      context: ./WatchlistService
-#    container_name: watchlist-service
-#    depends_on:
-#      mongodb:
-#        condition: service_started
-#      rabbitmq:
-#        condition: service_started
-#    environment:
-#      - MongoDbSettings__ConnectionString=mongodb://mongodb:27017
-#      - MongoDbSettings__DatabaseName=WatchlistDb
-#    ports:
-#      - "5002:80"
-#    networks:
-#      - smart_movie_network
+
+  watchlist-service:
+    build:
+      context: .
+      dockerfile: WatchlistService/Dockerfile
+    container_name: watchlist-service
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5002:8080"
+    networks:
+      - smart_movie_network
 #
 #  
 #  api-gateway:

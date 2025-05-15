@@ -1,7 +1,7 @@
-using MovieService.Application.Common.Interfaces;
 using SharedKernel.Events;
+using SharedKernel.Interfaces;
 
-namespace MovieService.Infrastructure.Messaging;
+namespace SharedKernel.Extensions;
 
 public static class EventPublisherExtensions
 {

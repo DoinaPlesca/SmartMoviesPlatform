@@ -9,6 +9,7 @@ using MovieService.Infrastructure.Persistence.Interfaces;
 using MovieService.Infrastructure.Persistence.Repositories;
 using MovieService.Infrastructure.Persistence.Seeders;
 using MovieService.Infrastructure.Storage;
+using SharedKernel.Interfaces;
 using SharedKernel.Middleware;
 
 

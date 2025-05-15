@@ -1,4 +1,3 @@
-using MovieService.Application.DTOs;
 using MovieService.Application.Dtos.Genre;
 using MovieService.Application.Dtos.Movie;
 
