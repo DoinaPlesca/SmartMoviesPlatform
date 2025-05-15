@@ -80,7 +80,9 @@ public class MovieService : IMovieService
         
         movie.Genre = genre;
         
+        movie.ReleaseDate = DateTime.SpecifyKind(movie.ReleaseDate, DateTimeKind.Utc);
         movie.AddCreatedEvent();
+
         _logger.LogInformation("MovieCreatedEvent added for Movie ID: {MovieId}", movie.Id);
         
         var created = await _repository.CreateAsync(movie);
@@ -116,7 +118,7 @@ public class MovieService : IMovieService
         
         existing.Title = dto.Title;
         existing.Description = dto.Description;
-        existing.ReleaseDate = dto.ReleaseDate;
+        existing.ReleaseDate = DateTime.SpecifyKind(dto.ReleaseDate, DateTimeKind.Utc); 
         existing.GenreId = dto.GenreId;
 
         existing.AddUpdatedEvent();

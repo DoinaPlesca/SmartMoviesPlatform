@@ -1,4 +1,3 @@
-
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MovieService.Application.Common.Interfaces;
@@ -20,14 +19,18 @@ DotNetEnv.Env.Load();
 builder.Services.AddOpenApi();
 DotNetEnv.Env.Load();
 
-var postgresConnectionString = $"Host={Environment.GetEnvironmentVariable("POSTGRES_HOST")};" +
-                               $"Port={Environment.GetEnvironmentVariable("POSTGRES_PORT")};" +
-                               $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")};" +
-                               $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")};" +
-                               $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")};";
+var envPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.FullName, ".env");
+ DotNetEnv.Env.Load(envPath);
+ 
+ var postgresConnectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                                ?? Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")
+                                ?? throw new Exception("No DB connection string found");
+
+Console.WriteLine($" Connecting to PostgreSQL with: {postgresConnectionString}");
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(postgresConnectionString));
+
 
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IDataSeeder, GenreSeeder>();

@@ -3,7 +3,6 @@ using System.Text.Json;
 using MovieService.Application.Common.Interfaces;
 using RabbitMQ.Client;
 using IModel = RabbitMQ.Client.IModel;
-
 namespace MovieService.Infrastructure.Messaging;
 
 public class RabbitMqEventPublisher : IEventPublisher
@@ -13,14 +12,34 @@ public class RabbitMqEventPublisher : IEventPublisher
 
     public RabbitMqEventPublisher(ILogger<RabbitMqEventPublisher> logger)
     {
-        var factory = new ConnectionFactory() { HostName = "localhost" };
-        var connection = factory.CreateConnection();
-        _channel = connection.CreateModel();
         _logger = logger;
+        var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
+        
+        _logger.LogInformation("Connecting to RabbitMQ at {Host}", hostName);
+        var factory = new ConnectionFactory() { HostName = hostName };
 
-        _channel.ExchangeDeclare(exchange: "movies", type: ExchangeType.Fanout);
+
+        const int maxRetries = 5;
+        for (int i = 1; i <= maxRetries; i++)
+        {
+            try
+            {
+                var connection = factory.CreateConnection();
+                _channel = connection.CreateModel();
+                _channel.ExchangeDeclare(exchange: "movies", type: ExchangeType.Fanout);
+                _logger.LogInformation("Connected to RabbitMQ.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "RabbitMQ connection failed (attempt {Attempt}/{Max})", i, maxRetries);
+                if (i == maxRetries)
+                    throw;
+                Thread.Sleep(3000);
+            }
+        }
     }
-
+    
     public async Task PublishAsync<T>(string topic, T message)
     {
         await PublishWithRetryAsync(topic, message);
@@ -47,7 +66,7 @@ public class RabbitMqEventPublisher : IEventPublisher
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "⚠ Publish attempt {Attempt} failed for {EventType}", attempt, typeof(T).Name);
+                _logger.LogWarning(ex, " Publish attempt {Attempt} failed for {EventType}", attempt, typeof(T).Name);
 
                 if (attempt == retries)
                 {
