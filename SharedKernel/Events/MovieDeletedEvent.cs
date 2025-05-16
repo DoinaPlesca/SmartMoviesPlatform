@@ -2,10 +2,14 @@ namespace SharedKernel.Events;
 
 public class MovieDeletedEvent : DomainEvent
 {
-    public int MovieId { get; }
+    public int Id { get; }
 
-    public MovieDeletedEvent(int movieId)
+    public MovieDeletedEvent(int id)
     {
-        MovieId = movieId;
+        if (id <= 0)
+            throw new ArgumentException("MovieDeletedEvent must have a valid ID.");
+
+        Id = id;
     }
+
 }

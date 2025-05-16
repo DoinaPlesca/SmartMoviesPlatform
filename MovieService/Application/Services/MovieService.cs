@@ -95,33 +95,33 @@ public class MovieService : IMovieService
         return _mapper.Map<MovieDto>(created);
     }
 
+
+    
+    
+    
     public async Task<MovieDto> UpdateAsync(int id, UpdateMovieDto dto)
     {
         var existing = await _repository.GetByIdAsync(id);
-        if (existing == null) throw new NotFoundException("Movie not found.");
+        if (existing == null)
+            throw new NotFoundException("Movie not found.");
 
         var genre = await _repository.GetGenreByIdAsync(dto.GenreId);
         if (genre == null)
             throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
 
-        if (dto.PosterFile != null)
-        {
-            var posterUrl = await _blobStorage.UploadFileAsync(dto.PosterFile, $"posters/{Guid.NewGuid()}_{dto.PosterFile.FileName}");
-            existing.PosterUrl = posterUrl;
-            existing.AddPosterReplacedEvent();
-            _logger.LogInformation("PosterReplacedEvent added for Movie ID: {MovieId}", existing.Id);
-        }
+        // Upload and assign new poster and video
+        var posterUrl = await _blobStorage.UploadFileAsync(
+            dto.PosterFile!,
+            $"posters/{Guid.NewGuid()}_{dto.PosterFile.FileName}");
 
-        if (dto.VideoFile != null)
-        {
-            var videoUrl = await _blobStorage.UploadFileAsync(dto.VideoFile, $"videos/{Guid.NewGuid()}_{dto.VideoFile.FileName}");
-            existing.VideoUrl = videoUrl;
-            existing.AddVideoFileUpdatedEvent();
-            _logger.LogInformation("VideoFileUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
-        }
+        var videoUrl = await _blobStorage.UploadFileAsync(
+            dto.VideoFile!,
+            $"videos/{Guid.NewGuid()}_{dto.VideoFile.FileName}");
+
+        existing.PosterUrl = posterUrl;
+        existing.VideoUrl = videoUrl;
 
         existing.UpdateRatingIfChanged(dto.Rating);
-        _logger.LogInformation("MovieRatedEvent added for Movie ID: {MovieId} if rating changed", existing.Id);
 
         existing.Title = dto.Title;
         existing.Description = dto.Description;
@@ -129,17 +129,34 @@ public class MovieService : IMovieService
         existing.GenreId = dto.GenreId;
         existing.Genre = genre;
 
-       
         await _repository.UpdateAsync(existing);
-        existing.AddUpdatedEvent(); 
+
+        _logger.LogInformation("DEBUG: Preparing MovieUpdatedEvent for ID={Id}, Title={Title}, Genre={GenreName}",
+            existing.Id, existing.Title, genre?.Name ?? "null");
+
+        existing.AddUpdatedEvent();
+
+        foreach (var e in existing.DomainEvents)
+        {
+            Console.WriteLine($"[BEFORE DISPATCH] Queued event: {e.GetType().Name} | ID: {((dynamic)e).Id}");
+        }
 
         await DomainEventDispatcher.DispatchAndClearEventsAsync(existing, _eventPublisher, "movies");
 
-        _logger.LogInformation("MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
+        existing.ClearDomainEvents();
+
+        _logger.LogInformation("✅ MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
 
         return _mapper.Map<MovieDto>(existing);
     }
 
+
+    
+    
+    
+    
+    
+    
 
     public async Task<bool> DeleteAsync(int id)
     {

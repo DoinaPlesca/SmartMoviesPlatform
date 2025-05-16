@@ -9,4 +9,9 @@ public interface IWatchlistRepository
     Task AddMovieToWatchlistAsync(string userId, MovieItem movie);
     Task RemoveMovieFromWatchlistAsync(string userId, int movieId);
 
+    Task RemoveMovieFromAllWatchlistsAsync(int movieId);
+    Task UpdateMovieInAllWatchlistsAsync(MovieItem movie);
+
+
+
 }

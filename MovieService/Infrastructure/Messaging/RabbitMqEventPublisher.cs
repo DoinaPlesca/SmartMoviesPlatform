@@ -22,7 +22,7 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
                        ?? throw new InvalidOperationException("RABBITMQ_HOST environment variable is missing");
 
         _exchangeName = Environment.GetEnvironmentVariable("RABBITMQ_EXCHANGE_NAME") ?? "movies";
-        _exchangeType = Environment.GetEnvironmentVariable("RABBITMQ_EXCHANGE_TYPE") ?? ExchangeType.Fanout;
+        _exchangeType = Environment.GetEnvironmentVariable("RABBITMQ_EXCHANGE_TYPE") ?? ExchangeType.Direct;
 
         var factory = new ConnectionFactory() { HostName = hostName };
 
@@ -33,8 +33,7 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
             {
                 _connection = factory.CreateConnection();
                 _channel = _connection.CreateModel();
-
-                // ✅ Declare exchange with durable: true
+                
                 _channel.ExchangeDeclare(exchange: _exchangeName, type: _exchangeType, durable: true);
 
                 _logger.LogInformation("Connected to RabbitMQ and declared exchange '{Exchange}'", _exchangeName);
@@ -65,6 +64,9 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
             try
             {
                 var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+                
+                Console.WriteLine($"[PUBLISH] EventType={typeof(T).Name} | Topic={topic} | Payload={JsonSerializer.Serialize(message)}");
+
                 _channel.BasicPublish(
                     exchange: topic,
                     routingKey: "",
@@ -88,6 +90,7 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
             }
         }
     }
+
 
     public void Dispose()
     {

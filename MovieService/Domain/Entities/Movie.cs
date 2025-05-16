@@ -47,31 +47,19 @@ namespace MovieService.Domain.Entities
                 Id,
                 Title,
                 Description,
+                ReleaseDate,
+                Rating,
                 Genre?.Name ?? string.Empty,
-                ReleaseDate
+                VideoUrl,
+                PosterUrl
             ));
         }
 
-
+        
         public void AddDeletedEvent()
         {
+            Console.WriteLine($"[DEBUG] AddDeletedEvent called for ID: {Id}");
             AddDomainEvent(new MovieDeletedEvent(Id));
-        }
-        
-        //  Internal events (used only inside MovieService)
-        public void AddPosterReplacedEvent()
-        {
-            AddDomainEvent(new PosterReplacedEvent(Id, PosterUrl));
-        }
-        
-        public void AddVideoFileUpdatedEvent()
-        {
-            AddDomainEvent(new VideoFileUpdatedEvent(Id, VideoUrl));
-        }
-        
-        public void AddRatedEvent()
-        {
-            AddDomainEvent(new MovieRatedEvent(Id, Rating));
         }
         
         public void UpdateRatingIfChanged(decimal newRating)
@@ -79,7 +67,6 @@ namespace MovieService.Domain.Entities
             if (Rating != newRating)
             {
                 Rating = newRating;
-                AddRatedEvent();
             }
         }
 

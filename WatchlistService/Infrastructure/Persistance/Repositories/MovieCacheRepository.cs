@@ -6,6 +6,7 @@ namespace WatchlistService.Infrastructure.Persistance.Repositories;
 
 public class MovieCacheRepository : IMovieCacheRepository
 {
+    //cached list of movies in MongoDB, separate from the user-specific watchlists
     private readonly MongoContext _context;
 
     public MovieCacheRepository(MongoContext context)

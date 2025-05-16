@@ -4,12 +4,12 @@ namespace MovieService.Domain.InternalEvents;
 
 public class VideoFileUpdatedEvent : DomainEvent
 {
-    public int MovieId { get; }
+    public int Id { get; }
     public string NewVideoUrl { get; }
 
-    public VideoFileUpdatedEvent(int movieId, string newVideoUrl)
+    public VideoFileUpdatedEvent(int id, string newVideoUrl)
     {
-        MovieId = movieId;
+       Id = id;
         NewVideoUrl = newVideoUrl;
     }
 }

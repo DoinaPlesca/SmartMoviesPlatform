@@ -2,6 +2,6 @@ namespace WatchlistService.Application.Dtos;
 
 public class WatchlistDto
 {
-    public string UserId { get; set; } = null!;
+    public required string UserId { get; set; }
     public List<MovieItemDto> Movies { get; set; } = new();
 }

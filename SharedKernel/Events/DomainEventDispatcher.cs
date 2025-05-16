@@ -3,16 +3,39 @@ using SharedKernel.Interfaces;
 
 namespace SharedKernel.Events;
 
+// public static class DomainEventDispatcher
+// {
+//     public static async Task DispatchAndClearEventsAsync(Entity entity, IEventPublisher publisher, string topic)
+//     {
+//         foreach (var domainEvent in entity.DomainEvents)
+//         {
+//             Console.WriteLine($" Dispatching: {domainEvent.GetType().Name} for Movie ID: {((dynamic)domainEvent).Id}");
+//             await publisher.PublishDynamicAsync(domainEvent, topic);
+//         }
+//
+//         entity.ClearDomainEvents();
+//     }
+// }
+
 public static class DomainEventDispatcher
 {
     public static async Task DispatchAndClearEventsAsync(Entity entity, IEventPublisher publisher, string topic)
     {
         foreach (var domainEvent in entity.DomainEvents)
         {
-            Console.WriteLine($" Dispatching: {domainEvent.GetType().Name} for Movie ID: {((dynamic)domainEvent).Id}");
+            var type = domainEvent.GetType().Name;
+            var id = ((dynamic)domainEvent).Id;
+            
+            if (id == 0 || (type == "MovieDeletedEvent" && topic == "movies" && entity.GetType().Name == "Movie"))
+            {
+                continue;
+            }
+
             await publisher.PublishDynamicAsync(domainEvent, topic);
         }
 
+
         entity.ClearDomainEvents();
     }
+
 }

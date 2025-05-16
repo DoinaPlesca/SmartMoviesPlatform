@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SharedKernel.Events;
 using WatchlistService.Application.Interfaces;
+using WatchlistService.Domain.Entities;
 using WatchlistService.Infrastructure.Messaging;
 
 public class MovieUpdatedConsumer : BaseRabbitMqConsumer
@@ -24,36 +25,44 @@ public class MovieUpdatedConsumer : BaseRabbitMqConsumer
                 var json = Encoding.UTF8.GetString(args.Body.ToArray());
                 var @event = JsonSerializer.Deserialize<MovieUpdatedEvent>(json);
 
-                if (@event == null)
+                if (@event == null || @event.Id <= 0)
                 {
-                    _logger.LogWarning("⚠️ Received null MovieUpdatedEvent.");
+                    _logger.LogWarning("⚠️ Received null or invalid MovieUpdatedEvent.");
                     return;
                 }
 
                 using var scope = ServiceProvider.CreateScope();
-                var repo = scope.ServiceProvider.GetRequiredService<IMovieCacheRepository>();
 
-                var existing = await repo.GetByIdAsync(@event.MovieId);
-                if (existing == null)
+                // ✅ Update movie in cache
+                var cacheRepo = scope.ServiceProvider.GetRequiredService<IMovieCacheRepository>();
+
+                var updatedMovie = new MovieItem
                 {
-                    _logger.LogWarning("⚠️ Movie ID {MovieId} not found in cache. Cannot update.", @event.MovieId);
-                    return;
-                }
+                    MovieId = @event.Id,
+                    Title = @event.Title,
+                    Description = @event.Description,
+                    Genre = @event.GenreName,
+                    ReleaseDate = @event.ReleaseDate,
+                    Rating = @event.Rating,
+                    PosterUrl = @event.PosterUrl,
+                    VideoUrl = @event.VideoUrl
+                };
 
-                // Update the fields
-                existing.Title = @event.Title;
-                existing.Description = @event.Description;
-                existing.Genre = @event.GenreName;
+                await cacheRepo.UpsertAsync(updatedMovie);
+                _logger.LogInformation("✏️ Upserted movie cache for Movie ID: {MovieId}", @event.Id);
 
-                await repo.UpsertAsync(existing);
+                // ✅ Update all user watchlists
+                var watchlistRepo = scope.ServiceProvider.GetRequiredService<IWatchlistRepository>();
+                await watchlistRepo.UpdateMovieInAllWatchlistsAsync(updatedMovie);
 
-                _logger.LogInformation("✏️ Updated movie cache for Movie ID: {MovieId}", @event.MovieId);
+                _logger.LogInformation("📄 Updated movie info in all watchlists for Movie ID: {MovieId}", @event.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Failed to process MovieUpdatedEvent.");
             }
         };
+
 
         Channel.BasicConsume(queue: "movie-updated", autoAck: true, consumer: consumer);
         return Task.CompletedTask;

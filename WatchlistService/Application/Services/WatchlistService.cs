@@ -87,4 +87,9 @@ public class WatchlistService : IWatchlistService
         await _repository.RemoveMovieFromWatchlistAsync(userId, movieId);
         _logger.LogInformation("Movie {MovieId} removed from user {UserId}'s watchlist", movieId, userId);
     }
+    
+    public async Task RemoveMovieFromAllWatchlistsAsync(int movieId)
+    {
+        await _repository.RemoveMovieFromAllWatchlistsAsync(movieId);
+    }
 }

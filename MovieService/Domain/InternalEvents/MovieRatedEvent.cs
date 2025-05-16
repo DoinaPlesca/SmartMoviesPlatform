@@ -4,12 +4,12 @@ namespace MovieService.Domain.InternalEvents;
 
 public class MovieRatedEvent : DomainEvent
 {
-    public int MovieId { get; }
+    public int Id { get; }
     public decimal NewRating { get; }
 
-    public MovieRatedEvent(int movieId, decimal newRating)
+    public MovieRatedEvent(int id, decimal newRating)
     {
-        MovieId = movieId;
+        Id = id;
         NewRating = newRating;
     }
 }

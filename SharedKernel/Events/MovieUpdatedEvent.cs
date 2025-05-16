@@ -1,21 +1,32 @@
 namespace SharedKernel.Events;
-
 public class MovieUpdatedEvent : DomainEvent
 {
-    public int MovieId { get; }
+    public int Id { get; }
     public string Title { get; }
     public string Description { get; }
-    public DateTime UpdatedAt { get; }
+    public DateTime ReleaseDate { get; }
+    public decimal Rating { get; }
     public string GenreName { get; }
-    
-    public int Id => MovieId;
+    public string VideoUrl { get; }
+    public string PosterUrl { get; }
 
-    public MovieUpdatedEvent(int movieId, string title, string description, string genreName, DateTime updatedAt)
+    public MovieUpdatedEvent(
+        int id,
+        string title,
+        string description,
+        DateTime releaseDate,
+        decimal rating,
+        string genreName,
+        string videoUrl,
+        string posterUrl)
     {
-        MovieId = movieId;
+        Id = id;
         Title = title;
-        UpdatedAt = DateTime.UtcNow;
         Description = description;
+        ReleaseDate = releaseDate;
+        Rating = rating;
         GenreName = genreName;
+        VideoUrl = videoUrl;
+        PosterUrl = posterUrl;
     }
 }

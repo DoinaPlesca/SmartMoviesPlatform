@@ -4,12 +4,12 @@ namespace MovieService.Domain.InternalEvents;
 
 public class PosterReplacedEvent : DomainEvent
 {
-    public int MovieId { get; }
+    public int Id { get; }
     public string NewPosterUrl { get; }
 
-    public PosterReplacedEvent(int movieId, string newPosterUrl)
+    public PosterReplacedEvent(int id, string newPosterUrl)
     {
-        MovieId = movieId;
+        Id = id;
         NewPosterUrl = newPosterUrl;
     }
 }
