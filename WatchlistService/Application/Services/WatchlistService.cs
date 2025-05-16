@@ -43,7 +43,6 @@ public class WatchlistService : IWatchlistService
             movie = await _movieCache.GetByIdAsync(dto.MovieId);
             if (movie != null)
                 break;
-
             await Task.Delay(500); 
         }
 
@@ -59,7 +58,6 @@ public class WatchlistService : IWatchlistService
                 UserId = userId,
                 Movies = new List<MovieItem> { movie }
             };
-
             await _repository.CreateWatchlistAsync(watchlist);
         }
         else
@@ -74,6 +72,7 @@ public class WatchlistService : IWatchlistService
     }
 
 
+    //remove for specific user
     public async Task RemoveMovieAsync(string userId, int movieId)
     {
         var watchlist = await _repository.GetWatchlistByUserIdAsync(userId);
@@ -84,10 +83,13 @@ public class WatchlistService : IWatchlistService
         if (!exists)
             throw new NotFoundException($"Movie ID {movieId} not found in user's watchlist.");
 
-        await _repository.RemoveMovieFromWatchlistAsync(userId, movieId);
+        await _repository.RemoveMovieFromWatchlistAsync(userId, movieId); 
         _logger.LogInformation("Movie {MovieId} removed from user {UserId}'s watchlist", movieId, userId);
     }
     
+    
+    
+     //!< remove for all users
     public async Task RemoveMovieFromAllWatchlistsAsync(int movieId)
     {
         await _repository.RemoveMovieFromAllWatchlistsAsync(movieId);

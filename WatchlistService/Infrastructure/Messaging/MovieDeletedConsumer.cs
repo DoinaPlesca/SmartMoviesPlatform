@@ -34,31 +34,27 @@ public class MovieDeletedConsumer : BaseRabbitMqConsumer
 
                 if (@event == null || @event.Id <= 0)
                 {
-                    _logger.LogWarning("⚠️ Received null or invalid MovieDeletedEvent.");
+                    _logger.LogWarning(" Received null or invalid MovieDeletedEvent.");
                     return;
                 }
-
-// Optional: log all received deletes for traceability
-                _logger.LogInformation("📥 Received MovieDeletedEvent for ID: {MovieId}", @event.Id);
-
-// Double-check cache before deleting from watchlist (optional safety layer)
+                
+                _logger.LogInformation(" Received MovieDeletedEvent for ID: {MovieId}", @event.Id);
+                
                 using var scope = ServiceProvider.CreateScope();
                 var repo = scope.ServiceProvider.GetRequiredService<IMovieCacheRepository>();
-
-// 👇 Check if movie is still in cache — if yes, skip deletion
+                
                 var movieInCache = await repo.GetByIdAsync(@event.Id);
                 if (movieInCache != null)
                 {
-                    _logger.LogWarning("⚠️ Movie ID {MovieId} still in cache — skipping delete to prevent conflict.", @event.Id);
+                    _logger.LogWarning("Movie ID {MovieId} still in cache — skipping delete to prevent conflict.", @event.Id);
                     return;
                 }
 
-// Proceed with deletion if confirmed removed from cache
                 var watchlistRepo = scope.ServiceProvider.GetRequiredService<IWatchlistRepository>();
                 await watchlistRepo.RemoveMovieFromAllWatchlistsAsync(@event.Id);
                 await repo.DeleteAsync(@event.Id);
 
-                _logger.LogInformation("🗑️ Deleted movie {MovieId} from all watchlists and cache.", @event.Id);
+                _logger.LogInformation(" Deleted movie {MovieId} from all watchlists and cache.", @event.Id);
 
             }
             catch (Exception ex)

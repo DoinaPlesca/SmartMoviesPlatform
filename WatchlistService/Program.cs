@@ -2,7 +2,6 @@ using SharedKernel.Middleware;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Application.Services;
 using WatchlistService.Infrastructure;
-using WatchlistService.Infrastructure.Events;
 using WatchlistService.Infrastructure.Mappings;
 using WatchlistService.Infrastructure.Messaging;
 using WatchlistService.Infrastructure.Persistance.Repositories;
@@ -16,9 +15,6 @@ builder.Services.AddScoped<IMovieCacheRepository, MovieCacheRepository>();
 builder.Services.AddScoped<IWatchlistRepository, WatchlistRepository>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService.Application.Services.WatchlistService>();
 builder.Services.AddAutoMapper(typeof(WatchlistMappingProfile).Assembly);
-
-builder.Services.AddSingleton<MovieEventRegistry>();
-
 
 builder.Services.AddHostedService<MovieCreatedConsumer>();
 builder.Services.AddHostedService<MovieUpdatedConsumer>();

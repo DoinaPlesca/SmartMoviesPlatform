@@ -14,7 +14,7 @@ public class MovieUpdatedConsumer : BaseRabbitMqConsumer
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("🛠️ MovieUpdatedConsumer is listening on queue 'movie-updated'...");
+        _logger.LogInformation(" MovieUpdatedConsumer is listening on queue 'movie-updated'...");
 
         var consumer = new EventingBasicConsumer(Channel);
 
@@ -27,13 +27,12 @@ public class MovieUpdatedConsumer : BaseRabbitMqConsumer
 
                 if (@event == null || @event.Id <= 0)
                 {
-                    _logger.LogWarning("⚠️ Received null or invalid MovieUpdatedEvent.");
+                    _logger.LogWarning("Received null or invalid MovieUpdatedEvent.");
                     return;
                 }
 
                 using var scope = ServiceProvider.CreateScope();
-
-                // ✅ Update movie in cache
+                
                 var cacheRepo = scope.ServiceProvider.GetRequiredService<IMovieCacheRepository>();
 
                 var updatedMovie = new MovieItem
@@ -49,17 +48,16 @@ public class MovieUpdatedConsumer : BaseRabbitMqConsumer
                 };
 
                 await cacheRepo.UpsertAsync(updatedMovie);
-                _logger.LogInformation("✏️ Upserted movie cache for Movie ID: {MovieId}", @event.Id);
-
-                // ✅ Update all user watchlists
+                _logger.LogInformation(" Upserted movie cache for Movie ID: {MovieId}", @event.Id);
+                
                 var watchlistRepo = scope.ServiceProvider.GetRequiredService<IWatchlistRepository>();
                 await watchlistRepo.UpdateMovieInAllWatchlistsAsync(updatedMovie);
 
-                _logger.LogInformation("📄 Updated movie info in all watchlists for Movie ID: {MovieId}", @event.Id);
+                _logger.LogInformation(" Updated movie info in all watchlists for Movie ID: {MovieId}", @event.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Failed to process MovieUpdatedEvent.");
+                _logger.LogError(ex, " Failed to process MovieUpdatedEvent.");
             }
         };
 

@@ -22,8 +22,7 @@ public abstract class BaseRabbitMqConsumer : BackgroundService
 
         _connection = factory.CreateConnection();
         Channel = _connection.CreateModel();
-
-        // Declare durable exchange and queue
+        
         Channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Fanout, durable: true);
         Channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false);
         Channel.QueueBind(queue: queueName, exchange: exchangeName, routingKey: "");

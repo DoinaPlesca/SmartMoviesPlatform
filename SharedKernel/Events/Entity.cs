@@ -8,12 +8,6 @@ public abstract class Entity
     
     protected void AddDomainEvent(DomainEvent domainEvent)
     {
-        var id = ((dynamic)domainEvent).Id;
-
-        if (id == 0)
-        {
-            return;
-        }
         _domainEvents.Add(domainEvent);
     }
     
