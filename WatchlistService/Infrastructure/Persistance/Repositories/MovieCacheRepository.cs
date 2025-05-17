@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using SharedKernel.Interfaces;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Domain.Entities;
 

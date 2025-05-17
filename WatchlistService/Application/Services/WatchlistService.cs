@@ -1,5 +1,6 @@
 using AutoMapper;
 using SharedKernel.Exceptions;
+using SharedKernel.Interfaces;
 using WatchlistService.Application.Dtos;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Domain.Entities;

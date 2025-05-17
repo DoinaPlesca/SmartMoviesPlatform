@@ -1,5 +1,4 @@
 
-using MovieService.Domain.InternalEvents;
 using SharedKernel.Events;
 
 namespace MovieService.Domain.Entities
@@ -7,25 +6,15 @@ namespace MovieService.Domain.Entities
     public class Movie : Entity
     {
         public int Id { get; set; }
-
-        public string Title { get; set; } = null!;
-
-        public string Description { get; set; } = null!;
-
+        public required string Title { get; set; }
+        public required string Description { get; set; }
         public DateTime ReleaseDate { get; set; }
-
         public decimal Rating { get; set; }
-
         public int GenreId { get; set; }
-
-        public Genre Genre { get; set; } = null!;
-
-        public string VideoUrl { get; set; } = null!;
-
-        public string PosterUrl { get; set; } = null!;
+        public required Genre Genre { get; set; }
+        public required string VideoUrl { get; set; }
+        public required string PosterUrl { get; set; }
         
-        
-        //  Shared event
         public void AddCreatedEvent()
         {
             AddDomainEvent(new MovieCreatedEvent(
@@ -39,7 +28,6 @@ namespace MovieService.Domain.Entities
                 PosterUrl
             ));
         }
-
         
         public void AddUpdatedEvent()
         {
@@ -54,14 +42,11 @@ namespace MovieService.Domain.Entities
                 PosterUrl
             ));
         }
-
         
         public void AddDeletedEvent()
         {
-            Console.WriteLine($"[DEBUG] AddDeletedEvent called for ID: {Id}");
             AddDomainEvent(new MovieDeletedEvent(Id));
         }
-        
         public void UpdateRatingIfChanged(decimal newRating)
         {
             if (Rating != newRating)
@@ -69,6 +54,5 @@ namespace MovieService.Domain.Entities
                 Rating = newRating;
             }
         }
-
     }
 }

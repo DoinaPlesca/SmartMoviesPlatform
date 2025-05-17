@@ -78,4 +78,13 @@ public class WatchlistRepository : IWatchlistRepository
 
         await _context.Watchlists.UpdateManyAsync(filter, update, options);
     }
+    
+    
+    public async Task<bool> IsMovieAbsentFromAllWatchlistsAsync(int movieId)
+    {
+        var filter = Builders<Watchlist>.Filter.ElemMatch(w => w.Movies, m => m.MovieId == movieId);
+        var existing = await _context.Watchlists.Find(filter).AnyAsync();
+        return !existing;
+    }
+
 }

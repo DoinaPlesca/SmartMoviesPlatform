@@ -8,7 +8,6 @@ public static class DomainEventDispatcher
     {
         foreach (var domainEvent in entity.DomainEvents)
         {
-            Console.WriteLine($" Dispatching: {domainEvent.GetType().Name} for Movie ID: {((dynamic)domainEvent).Id}");
             await publisher.PublishDynamicAsync(domainEvent, topic);
         }
 

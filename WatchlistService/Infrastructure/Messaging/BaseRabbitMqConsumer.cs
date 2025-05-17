@@ -1,6 +1,4 @@
 using RabbitMQ.Client;
-
-
 namespace WatchlistService.Infrastructure.Messaging;
 
 public abstract class BaseRabbitMqConsumer : BackgroundService

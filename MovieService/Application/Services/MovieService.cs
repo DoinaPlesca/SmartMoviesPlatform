@@ -18,7 +18,7 @@ public class MovieService : IMovieService
     private readonly IBlobStorageService _blobStorage;
     private readonly ILogger<MovieService> _logger;
     private readonly IEventPublisher _eventPublisher;
-
+    
     public MovieService(IMovieRepository repository, IMapper mapper, IBlobStorageService blobStorage, ILogger<MovieService> logger, IEventPublisher eventPublisher)
     {
         _repository = repository;
@@ -94,10 +94,6 @@ public class MovieService : IMovieService
 
         return _mapper.Map<MovieDto>(created);
     }
-
-
-    
-    
     
     public async Task<MovieDto> UpdateAsync(int id, UpdateMovieDto dto)
     {
@@ -108,8 +104,7 @@ public class MovieService : IMovieService
         var genre = await _repository.GetGenreByIdAsync(dto.GenreId);
         if (genre == null)
             throw new BadRequestException($"Genre ID {dto.GenreId} does not exist.");
-
-        // Upload and assign new poster and video
+        
         var posterUrl = await _blobStorage.UploadFileAsync(
             dto.PosterFile!,
             $"posters/{Guid.NewGuid()}_{dto.PosterFile.FileName}");
@@ -131,33 +126,25 @@ public class MovieService : IMovieService
 
         await _repository.UpdateAsync(existing);
 
-        _logger.LogInformation("DEBUG: Preparing MovieUpdatedEvent for ID={Id}, Title={Title}, Genre={GenreName}",
+        _logger.LogInformation(" Preparing MovieUpdatedEvent for ID={Id}, Title={Title}, Genre={GenreName}",
             existing.Id, existing.Title, genre?.Name ?? "null");
 
         existing.AddUpdatedEvent();
 
         foreach (var e in existing.DomainEvents)
         {
-            Console.WriteLine($"[BEFORE DISPATCH] Queued event: {e.GetType().Name} | ID: {((dynamic)e).Id}");
+            Console.WriteLine($"Queued event: {e.GetType().Name} | ID: {((dynamic)e).Id}");
         }
 
         await DomainEventDispatcher.DispatchAndClearEventsAsync(existing, _eventPublisher, "movies");
 
         existing.ClearDomainEvents();
 
-        _logger.LogInformation("✅ MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
+        _logger.LogInformation("MovieUpdatedEvent added for Movie ID: {MovieId}", existing.Id);
 
         return _mapper.Map<MovieDto>(existing);
     }
-
-
     
-    
-    
-    
-    
-    
-
     public async Task<bool> DeleteAsync(int id)
     {
         var movie = await _repository.GetByIdAsync(id);

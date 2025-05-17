@@ -44,7 +44,6 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
                 _logger.LogWarning(ex, "RabbitMQ connection failed (attempt {Attempt}/{Max})", i, maxRetries);
                 if (i == maxRetries)
                     throw;
-
                 Thread.Sleep(3000);
             }
         }
@@ -55,6 +54,7 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
         await PublishWithRetryAsync(topic, message);
     }
 
+    
     private async Task PublishWithRetryAsync<T>(string topic, T message)
     {
         const int retries = 3;
@@ -65,8 +65,6 @@ public class RabbitMqEventPublisher : IEventPublisher, IDisposable
             {
                 var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
                 
-                Console.WriteLine($"[PUBLISH] EventType={typeof(T).Name} | Topic={topic} | Payload={JsonSerializer.Serialize(message)}");
-
                 _channel.BasicPublish(
                     exchange: topic,
                     routingKey: "",

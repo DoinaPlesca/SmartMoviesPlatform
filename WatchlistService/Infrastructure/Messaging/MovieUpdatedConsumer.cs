@@ -5,7 +5,8 @@ using RabbitMQ.Client.Events;
 using SharedKernel.Events;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Domain.Entities;
-using WatchlistService.Infrastructure.Messaging;
+
+namespace WatchlistService.Infrastructure.Messaging;
 
 public class MovieUpdatedConsumer : BaseRabbitMqConsumer
 {

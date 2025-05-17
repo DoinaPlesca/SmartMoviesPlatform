@@ -11,6 +11,7 @@ public interface IWatchlistRepository
 
     Task RemoveMovieFromAllWatchlistsAsync(int movieId);
     Task UpdateMovieInAllWatchlistsAsync(MovieItem movie);
+    Task<bool> IsMovieAbsentFromAllWatchlistsAsync(int movieId);
 
 
 

@@ -1,3 +1,4 @@
+
 using SharedKernel.Middleware;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Application.Services;
