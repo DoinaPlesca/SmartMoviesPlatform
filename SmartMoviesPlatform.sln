@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WatchlistService", "Watchli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "SharedKernel\SharedKernel.csproj", "{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalGateway", "InternalGateway\InternalGateway.csproj", "{09188399-4CBF-486E-A156-35EC77DA44F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03670C1E-63E5-4FA0-A4D2-42787C01BF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09188399-4CBF-486E-A156-35EC77DA44F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09188399-4CBF-486E-A156-35EC77DA44F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09188399-4CBF-486E-A156-35EC77DA44F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09188399-4CBF-486E-A156-35EC77DA44F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
