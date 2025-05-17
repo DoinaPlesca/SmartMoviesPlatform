@@ -1,0 +1,13 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/genres",
+      "UpstreamHttpMethod": ["GET"],
+      "DownstreamPathTemplate": "/api/genres",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "movie-service", "Port": 8080 }
+      ]
+    }
+  ]
+}
