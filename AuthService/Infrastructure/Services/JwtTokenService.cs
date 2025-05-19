@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthService.Application.Services;
+namespace AuthService.Infrastructure.Services;
 
 public class JwtTokenService
 {

@@ -1,56 +1,38 @@
-using AuthService.Application.Models;
-using AuthService.Application.Services;
-
+using AuthService.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using SharedKernel.Wrappers;
+using SharedKernel.Exceptions;
 
-namespace InternalGateway.Controller;
+namespace AuthService.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly JwtTokenService _jwtService;
+    private readonly Application.Services.AuthService _authService;
 
-    public AuthController(JwtTokenService jwtService)
+    public AuthController(Application.Services.AuthService authService)
     {
-        _jwtService = jwtService;
+        _authService = authService;
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+    {
+        var result = await _authService.RegisterAsync(request);
+        if (!result)
+            throw new BadRequestException("Username already exists.");
+
+        return Ok(ApiResponse<string>.Ok("Registration successful"));
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequestDto request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
-        // Simulated user store
-        var users = new List<(string Username, string Password, string Role)>
-        {
-            ("admin", "password", "Admin"),
-            ("user", "user123", "User")
-        };
+        var response = await _authService.LoginAsync(request);
+        if (response == null)
+            throw new BadRequestException("Invalid username or password.");
 
-        var matchedUser = users.FirstOrDefault(u =>
-            u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase)
-            && u.Password == request.Password
-        );
-
-        if (matchedUser == default)
-        {
-            return Unauthorized(new { message = "Invalid username or password" });
-        }
-
-        var claims = new Dictionary<string, string>
-        {
-            { "sub", Guid.NewGuid().ToString() },
-            { "username", matchedUser.Username },
-            { "role", matchedUser.Role }
-        };
-
-        var token = _jwtService.CreateToken(claims);
-
-        var response = new LoginResponseDto
-        {
-            Token = token.Value,
-            Username = matchedUser.Username
-        };
-
-        return Ok(response);
+        return Ok(ApiResponse<LoginResponseDto>.Ok(response));
     }
 }
