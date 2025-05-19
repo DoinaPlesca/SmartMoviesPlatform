@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieService.Application.Dtos.Movie;
 using MovieService.Application.Services;
@@ -18,6 +19,7 @@ public class MoviesController : ControllerBase
 
     //  api/movies
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] MovieQueryParameters query)
     {
         var (movies, totalCount) = await _movieService.GetAllAsync(query);
@@ -32,6 +34,7 @@ public class MoviesController : ControllerBase
     
     // api/movies/5
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> GetById(int id)
     {
         var movie = await _movieService.GetByIdAsync(id);
@@ -43,6 +46,7 @@ public class MoviesController : ControllerBase
 
     //  api/movies
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreateMovie([FromForm] CreateMovieDto dto)
     {
@@ -52,6 +56,7 @@ public class MoviesController : ControllerBase
 
     // api/movies
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateMovieDto dto)
     {
@@ -62,6 +67,7 @@ public class MoviesController : ControllerBase
 
     //  api/movies/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _movieService.DeleteAsync(id);
@@ -73,6 +79,7 @@ public class MoviesController : ControllerBase
 
     //  api/movies/genre/3
     [HttpGet("genre/{genreId}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByGenre(int genreId)
     {
         var movies = await _movieService.GetMovieByGenreAsync(genreId);

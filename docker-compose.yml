@@ -48,6 +48,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      
+      
+  auth-service:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5003:8080"
+    networks:
+      - smart_movie_network
 
  
   movie-service:
@@ -65,9 +79,6 @@ services:
       - "5001:8080"
     env_file:
       - .env
-#    environment:
-#      - RABBITMQ_HOST=rabbitmq
-#      - DB_CONNECTION_STRING=Host=postgres;Port=5432;Database=postgres;Username=postgres;Password=P@ssw0rd!
     networks:
       - smart_movie_network
 
@@ -89,21 +100,30 @@ services:
       - "5002:8080"
     networks:
       - smart_movie_network
-#
-#  
-#  api-gateway:
-#    build:
-#      context: ./ApiGateway
-#    container_name: api-gateway
-#    depends_on:
-#      - movie-service
-#      - watchlist-service
-#    ports:
-#      - "5000:80"
-#    networks:
-#      - smart_movie_network
-#    volumes:
-#      - ./ApiGateway/ocelot.json:/app/ocelot.json
+
+
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway
+    build:
+      context: .
+      dockerfile: InternalGateway/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8080:80"
+    networks:
+      - smart_movie_network
+
+  debugger:
+    image: alpine
+    container_name: docker-debug
+    command: sh
+    stdin_open: true
+    tty: true
+    networks:
+      - smart_movie_network
+
 
 volumes:
   postgres_data:
@@ -111,4 +131,4 @@ volumes:
 
 networks:
   smart_movie_network:
-    driver: bridge
+    external: true

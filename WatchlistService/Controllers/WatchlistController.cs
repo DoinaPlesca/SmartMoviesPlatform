@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel.Wrappers;
 using WatchlistService.Application.Dtos;
@@ -7,6 +8,7 @@ namespace WatchlistService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "User,Admin")] 
 public class WatchlistController : ControllerBase
 {
     private readonly IWatchlistService _watchlistService;

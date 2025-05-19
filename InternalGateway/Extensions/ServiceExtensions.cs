@@ -3,14 +3,21 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Provider.Polly;
 
 namespace InternalGateway.Extensions;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddApiGatewayServices(this IServiceCollection services, IConfiguration config)
+
+    public static IServiceCollection AddApiGatewayServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var secretKey = GetJwtSecret(config);
+        var jwtSecret = configuration["JWT_SECRET_KEY"];
+
+        if (string.IsNullOrWhiteSpace(jwtSecret))
+        {
+            throw new InvalidOperationException("JWT_SECRET_KEY is missing. Please set it in .env or environment variables.");
+        }
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -24,11 +31,11 @@ public static class ServiceExtensions
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
                 };
             });
 
-        services.AddOcelot(config);
+        services.AddOcelot(configuration).AddPolly();
         return services;
     }
 
@@ -38,13 +45,5 @@ public static class ServiceExtensions
         app.UseAuthorization();
         app.UseOcelot().Wait();
         return app;
-    }
-
-    private static string GetJwtSecret(IConfiguration config)
-    {
-        var secret = config["AuthenticationProviderKey"];
-        if (string.IsNullOrWhiteSpace(secret))
-            throw new InvalidOperationException("JWT secret key is missing. Please set 'AuthenticationProviderKey'.");
-        return secret;
     }
 }

@@ -77,6 +77,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
-//app.UseAuthorization();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

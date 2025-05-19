@@ -1,0 +1,17 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/watchlist/{userId}",
+      "UpstreamHttpMethod": ["GET", "POST", "DELETE"],
+      "DownstreamPathTemplate": "/api/watchlist/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "watchlist-service", "Port": 8080 }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    }
+  ]
+}

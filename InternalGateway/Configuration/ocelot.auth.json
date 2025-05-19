@@ -6,7 +6,8 @@
       "DownstreamPathTemplate": "/api/auth/login",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        { "Host": "auth-service", "Port": 8080 }
+        { "Host": "auth-service",
+          "Port": 8080 }
       ]
     },
     {
@@ -15,16 +16,18 @@
       "DownstreamPathTemplate": "/api/auth/register",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        { "Host": "auth-service", "Port": 8080 }
+        { "Host": "auth-service", 
+          "Port": 8080 }
       ]
     },
     {
-      "UpstreamPathTemplate": "/auth/me",
+      "UpstreamPathTemplate": "/auth/{id}",
       "UpstreamHttpMethod": ["GET"],
-      "DownstreamPathTemplate": "/api/auth/me",
+      "DownstreamPathTemplate": "/api/auth/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        { "Host": "auth-service", "Port": 8080 }
+        { "Host": "auth-service",
+          "Port": 8080 }
       ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
