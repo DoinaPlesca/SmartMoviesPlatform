@@ -20,9 +20,17 @@ public class JwtTokenService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var jwtClaims = claims.Select(c => new Claim(c.Key, c.Value)).ToList();
+        //var jwtClaims = claims.Select(c => new Claim(c.Key, c.Value)).ToList();
+        
+        var jwtClaims = new List<Claim>
+        {
+            new Claim("iss", "smart-key") // REQUIRED for Kong to validate(adds the issuer claim, which must match the key I give Kong in the consumer config)
+        };
+
+        jwtClaims.AddRange(claims.Select(c => new Claim(c.Key, c.Value)));
 
         var token = new JwtSecurityToken(
+            issuer: "smart-key",
             claims: jwtClaims,
             expires: DateTime.UtcNow.Add(lifetime ?? TimeSpan.FromHours(1)),
             signingCredentials: creds

@@ -19,20 +19,6 @@
         { "Host": "auth-service", 
           "Port": 8080 }
       ]
-    },
-    {
-      "UpstreamPathTemplate": "/auth/{id}",
-      "UpstreamHttpMethod": ["GET"],
-      "DownstreamPathTemplate": "/api/auth/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        { "Host": "auth-service",
-          "Port": 8080 }
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      }
     }
   ]
 }

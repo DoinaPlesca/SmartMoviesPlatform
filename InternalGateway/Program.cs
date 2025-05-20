@@ -56,7 +56,7 @@ foreach (var route in rawRoutes)
 {
     var upstream = route["UpstreamPathTemplate"];
     var downstream = route["DownstreamPathTemplate"];
-    logger.LogInformation("➡️ Configured Route: {upstream} → {downstream}", upstream, downstream);
+    logger.LogInformation(" Configured Route: {upstream} → {downstream}", upstream, downstream);
 }
 
 try
@@ -65,7 +65,7 @@ try
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "❌ Ocelot failed to start or route properly");
+    logger.LogError(ex, " Ocelot failed to start or route properly");
 }
 
 app.Run();

@@ -18,7 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
 
 builder.Services.AddOpenApi();
-DotNetEnv.Env.Load();
 
 var envPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.FullName, ".env");
  DotNetEnv.Env.Load(envPath);
