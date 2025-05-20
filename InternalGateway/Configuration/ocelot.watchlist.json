@@ -2,7 +2,7 @@
   "Routes": [
     {
       "UpstreamPathTemplate": "/watchlist/{userId}",
-      "UpstreamHttpMethod": ["GET", "POST", "DELETE"],
+      "UpstreamHttpMethod": ["GET"],
       "DownstreamPathTemplate": "/api/watchlist/{userId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -11,6 +11,51 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/watchlist/{userId}",
+      "UpstreamHttpMethod": ["POST"],
+      "DownstreamPathTemplate": "/api/watchlist/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "watchlist-service", "Port": 8080 }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/watchlist/{userId}",
+      "UpstreamHttpMethod": ["DELETE"],
+      "DownstreamPathTemplate": "/api/watchlist/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "watchlist-service", "Port": 8080 }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
       }
     }
   ]

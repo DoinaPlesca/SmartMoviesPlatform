@@ -16,5 +16,11 @@ public class AuthDbContext : DbContext
         modelBuilder.Entity<User>().Property(u => u.Username).IsRequired();
         modelBuilder.Entity<User>().Property(u => u.Email).IsRequired();
         modelBuilder.Entity<User>().Property(u => u.PasswordHash).IsRequired();
+        
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>()
+            .IsRequired();
+        
     }
 }

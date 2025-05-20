@@ -2,23 +2,22 @@ using Ocelot.Middleware;
 using InternalGateway.Extensions;
 using Ocelot.DependencyInjection;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
-// Enable verbose logging from Ocelot
+// logging from Ocelot
 builder.Logging.AddFilter("Ocelot.Middleware", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.Configuration", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.Errors", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.Responder", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.DownstreamRouteFinder", LogLevel.Debug);
-
-// Optional: Reduce noise from Microsoft logs
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
 
-
+// Load Ocelot + environment configs
 builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
 {
     var env = hostingContext.HostingEnvironment;
@@ -35,18 +34,19 @@ builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
 });
 
 
-
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiGatewayServices(builder.Configuration); 
+
 var app = builder.Build();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 
+// Route logging
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation(" API Gateway started. Listening on /auth, /movies, /watchlist etc.");
 
@@ -59,6 +59,7 @@ foreach (var route in rawRoutes)
     logger.LogInformation(" Configured Route: {upstream} → {downstream}", upstream, downstream);
 }
 
+// Ocelot middleware
 try
 {
     await app.UseOcelot();

@@ -1,9 +1,9 @@
 using AuthService.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using SharedKernel.Wrappers;
 using SharedKernel.Exceptions;
+using SharedKernel.Wrappers;
 
-namespace AuthService.API.Controllers;
+namespace AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

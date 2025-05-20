@@ -8,10 +8,6 @@
       "DownstreamHostAndPorts": [
         { "Host": "movie-service", "Port": 8080 }
       ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
-      },
       "RateLimitOptions": {
         "EnableRateLimiting": true,
         "Period": "1m",
@@ -20,7 +16,7 @@
     },
     {
       "UpstreamPathTemplate": "/movies/{id}",
-      "UpstreamHttpMethod": ["GET", "DELETE"],
+      "UpstreamHttpMethod": ["GET"],
       "DownstreamPathTemplate": "/api/movies/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -30,8 +26,24 @@
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       },
-      "RouteClaimsRequirement": {
-        "role": "Admin"
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/movies/{id}",
+      "UpstreamHttpMethod": ["DELETE"],
+      "DownstreamPathTemplate": "/api/movies/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "movie-service", "Port": 8080 }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
       }
     },
     {
@@ -46,8 +58,8 @@
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       },
-      "RouteClaimsRequirement": {
-        "role": "Admin"
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
       }
     },
     {
@@ -62,8 +74,8 @@
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       },
-      "RouteClaimsRequirement": {
-        "role": "Admin"
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
       }
     },
     {
@@ -74,9 +86,10 @@
       "DownstreamHostAndPorts": [
         { "Host": "movie-service", "Port": 8080 }
       ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
       }
     }
   ]

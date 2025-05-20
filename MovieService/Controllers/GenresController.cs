@@ -16,8 +16,7 @@ public class GenresController : ControllerBase
     {
         _movieService = movieService;
     }
-
-    //  api/genres
+    
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetAll()

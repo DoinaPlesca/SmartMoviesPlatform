@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using AuthService.Application.Dtos;
 using AuthService.Application.Interfaces;
@@ -34,10 +33,11 @@ public class AuthService
 
         var token = _jwtTokenService.CreateToken(new Dictionary<string, string>
         {
-            { ClaimTypes.Name, user.Username },
+            { "name", user.Username },
+            //{ "role", user.Role.ToString() },
             { "sub", user.Id.ToString() }
         });
-
+        
         var response = _mapper.Map<LoginResponseDto>(user);
         response.Token = token.Value;
 
@@ -52,7 +52,7 @@ public class AuthService
         
         var tempUser = _mapper.Map<User>(request);
         var passwordHash = _passwordHasher.Hash(request.Password);
-        var newUser = new User(tempUser.Username, passwordHash, tempUser.Email);
+        var newUser = new User(tempUser.Username, passwordHash, tempUser.Email, tempUser.Role);
 
         await _userRepository.AddAsync(newUser);
         return true;

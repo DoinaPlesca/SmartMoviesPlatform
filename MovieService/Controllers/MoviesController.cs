@@ -17,7 +17,7 @@ public class MoviesController : ControllerBase
         _movieService = movieService;
     }
 
-    //  api/movies
+   
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] MovieQueryParameters query)
@@ -32,9 +32,9 @@ public class MoviesController : ControllerBase
         ));
     }
     
-    // api/movies/5
+ 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize]
     public async Task<IActionResult> GetById(int id)
     {
         var movie = await _movieService.GetByIdAsync(id);
@@ -44,9 +44,9 @@ public class MoviesController : ControllerBase
         return Ok(ApiResponse<MovieDto>.Ok(movie));
     }
 
-    //  api/movies
+    
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreateMovie([FromForm] CreateMovieDto dto)
     {
@@ -54,9 +54,9 @@ public class MoviesController : ControllerBase
         return Ok(ApiResponse<MovieDto>.Ok(created, 201));
     }
 
-    // api/movies
+   
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(int id, [FromForm] UpdateMovieDto dto)
     {
@@ -65,9 +65,8 @@ public class MoviesController : ControllerBase
     }
 
 
-    //  api/movies/5
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _movieService.DeleteAsync(id);
@@ -76,8 +75,7 @@ public class MoviesController : ControllerBase
 
         return Ok(ApiResponse<string>.Ok("Movie deleted successfully", 200));
     }
-
-    //  api/movies/genre/3
+    
     [HttpGet("genre/{genreId}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetByGenre(int genreId)
