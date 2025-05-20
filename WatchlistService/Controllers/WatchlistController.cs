@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel.Wrappers;
 using WatchlistService.Application.Dtos;
@@ -16,24 +17,25 @@ public class WatchlistController : ControllerBase
         _watchlistService = watchlistService;
     }
 
-    // /api/watchlist/user1
+   
     [HttpGet("{userId}")]
+    [Authorize] 
     public async Task<IActionResult> GetWatchlist(string userId)
     {
         var watchlist = await _watchlistService.GetWatchlistAsync(userId);
         return Ok(ApiResponse<WatchlistDto>.Ok(watchlist));
     }
-
-    //  /api/watchlist/user1
+    
     [HttpPost("{userId}")]
+    [Authorize] 
     public async Task<IActionResult> AddMovie(string userId, [FromBody] AddMovieDto dto)
     {
         await _watchlistService.AddMovieAsync(userId, dto);
         return Ok(ApiResponse<string>.Ok($"Movie {dto.MovieId} added to user {userId}'s watchlist."));
     }
-
-    // /api/watchlist/user1
+    
     [HttpDelete("{userId}")]
+    [Authorize] 
     public async Task<IActionResult> RemoveMovie(string userId, [FromBody] RemoveMovieRequestDto dto)
     {
         await _watchlistService.RemoveMovieAsync(userId, dto.MovieId);

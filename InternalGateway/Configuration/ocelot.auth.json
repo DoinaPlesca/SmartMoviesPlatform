@@ -1,0 +1,34 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/auth/login",
+      "UpstreamHttpMethod": ["POST"],
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "auth-service",
+          "Port": 8080 }
+      ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/auth/register",
+      "UpstreamHttpMethod": ["POST"],
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "auth-service", 
+          "Port": 8080 }
+      ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 5
+      }
+    }
+  ]
+}

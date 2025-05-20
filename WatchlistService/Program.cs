@@ -1,4 +1,5 @@
 
+using SharedKernel.Extensions;
 using SharedKernel.Middleware;
 using WatchlistService.Application.Interfaces;
 using WatchlistService.Application.Services;
@@ -33,6 +34,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SupportNonNullableReferenceTypes();
 });
 
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -40,6 +42,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

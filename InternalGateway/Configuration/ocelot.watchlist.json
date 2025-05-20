@@ -11,6 +11,9 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
       }
     },
     {
@@ -24,6 +27,14 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
       }
     },
     {
@@ -37,6 +48,14 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {
+        "X-UserId": "Claims[sub] > value"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "Limit": 10
       }
     }
   ]

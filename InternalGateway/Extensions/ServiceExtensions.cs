@@ -1,34 +1,45 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Provider.Polly;
+using SharedKernel.Extensions;
 
 namespace InternalGateway.Extensions;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddApiGatewayServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddApiGatewayServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var secretKey = GetJwtSecret(config);
+        DotNetEnv.Env.Load();
+        
+        services.AddJwtAuthentication(configuration);
+        
+        // var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY")
+        //                 ?? throw new InvalidOperationException("JWT_SECRET_KEY is not set");
+        //
+        // var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+        //              ?? throw new InvalidOperationException("JWT_ISSUER is not set");
+        //
+        // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); 
+        //
+        // services.AddAuthentication("Bearer")
+        //     .AddJwtBearer("Bearer", options =>
+        //     {
+        //         options.RequireHttpsMetadata = false;
+        //         options.MapInboundClaims = false; 
+        //         options.TokenValidationParameters = new TokenValidationParameters
+        //         {
+        //             ValidateIssuer = true,
+        //             ValidIssuer = issuer,
+        //             ValidateAudience = false,
+        //             ValidateLifetime = true,
+        //             ValidateIssuerSigningKey = true,
+        //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        //            
+        //         };
+        //     });
 
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        services.AddOcelot(configuration).AddPolly();
 
-        services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-                };
-            });
-
-        services.AddOcelot(config);
         return services;
     }
 
@@ -38,13 +49,5 @@ public static class ServiceExtensions
         app.UseAuthorization();
         app.UseOcelot().Wait();
         return app;
-    }
-
-    private static string GetJwtSecret(IConfiguration config)
-    {
-        var secret = config["AuthenticationProviderKey"];
-        if (string.IsNullOrWhiteSpace(secret))
-            throw new InvalidOperationException("JWT secret key is missing. Please set 'AuthenticationProviderKey'.");
-        return secret;
     }
 }

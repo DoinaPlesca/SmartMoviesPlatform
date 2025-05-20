@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "SharedKerne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalGateway", "InternalGateway\InternalGateway.csproj", "{09188399-4CBF-486E-A156-35EC77DA44F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{A9EC337B-09E6-490A-A500-B1AEA9296939}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KongManager", "KongManager\KongManager.csproj", "{11D20C2E-C7F2-482D-B98B-CB21B3BDDEC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{09188399-4CBF-486E-A156-35EC77DA44F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09188399-4CBF-486E-A156-35EC77DA44F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09188399-4CBF-486E-A156-35EC77DA44F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EC337B-09E6-490A-A500-B1AEA9296939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EC337B-09E6-490A-A500-B1AEA9296939}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EC337B-09E6-490A-A500-B1AEA9296939}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EC337B-09E6-490A-A500-B1AEA9296939}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11D20C2E-C7F2-482D-B98B-CB21B3BDDEC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11D20C2E-C7F2-482D-B98B-CB21B3BDDEC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11D20C2E-C7F2-482D-B98B-CB21B3BDDEC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11D20C2E-C7F2-482D-B98B-CB21B3BDDEC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

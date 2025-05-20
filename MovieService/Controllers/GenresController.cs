@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieService.Application.Dtos.Genre;
 using MovieService.Application.Services;
@@ -15,9 +16,9 @@ public class GenresController : ControllerBase
     {
         _movieService = movieService;
     }
-
-    //  api/genres
+    
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var genres = await _movieService.GetAllGenresAsync();
