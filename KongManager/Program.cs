@@ -1,75 +1,67 @@
+using System.Text.Json;
+using KongManager.Models;
 using KongManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load environment variables
 builder.Configuration.AddEnvironmentVariables();
 
-// HTTP client for Kong Admin API
+var kongBaseUrl = builder.Configuration["Kong:BaseUrl"] ?? "http://localhost:8001";
+
 builder.Services.AddHttpClient("KongAdmin", client =>
 {
-    client.BaseAddress = new Uri("http://kong:8001");
+    client.BaseAddress = new Uri(kongBaseUrl);
 });
-
-// Register services
 builder.Services.AddScoped<KongAdminService>();
 
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
+
+
+// Load Kong route config from file
+var configPath = Path.Combine("Configuration", "kong.routes.json");
+var configJson = await File.ReadAllTextAsync(configPath);
+var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+var kongConfig = JsonSerializer.Deserialize<KongConfigRoot>(configJson, options)!;
+
+using var scope = app.Services.CreateScope();
 var kong = scope.ServiceProvider.GetRequiredService<KongAdminService>();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
 
-// Load secrets from .env
-var jwtIssuer = builder.Configuration["JWT_ISSUER"];
-var jwtSecret = builder.Configuration["JWT_SECRET_KEY"];
-
-if (string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtSecret))
-    throw new InvalidOperationException("Missing JWT_ISSUER or JWT_SECRET_KEY in environment.");
-
-
-// 1: Register service
-await kong.RegisterServiceAsync("smart-ocelot", "http://api-gateway:80");
-logger.LogInformation(" Registered service: smart-ocelot");
+// Delete all existing routes before re-registering
+logger.LogInformation("Deleting all existing Kong routes and services...");
+await kong.DeleteAllRoutesAsync();
+await kong.DeleteAllServicesAsync();
+logger.LogInformation("All routes and services deleted.");
+// await kong.EnableGlobalFileLogAsync("/dev/stdout");
 
 
-// 2: Register routes and attach plugins
-var paths = new[]
+
+// Register services, routes, and plugins
+foreach (var svc in kongConfig.services)
 {
-    "/api",
-    "/api/auth",
-    "/api/movies",
-    "/api/watchlist",
-    "/api/genres"
-};
+    logger.LogInformation("Registering service: {Name}", svc.name);
+    await kong.RegisterServiceAsync(svc.name, svc.url);
 
-foreach (var path in paths)
-{
-    await kong.RegisterRouteAsync("smart-ocelot", path);
-    var routeId = await kong.GetRouteIdByPathAsync(path);
+    foreach (var route in svc.routes)
+    {
+        var path = route.paths.First();
+        logger.LogInformation("Registering route: {Name} → {Path}", route.name, path);
+        await kong.RegisterRouteAsync(svc.name, path, route.methods);
 
-    if (!string.IsNullOrEmpty(routeId))
-    {
-        logger.LogInformation("Configuring route: {Path}", path);
-        await kong.AddHttpLogPluginToRouteAsync(routeId);
-        await kong.AddRateLimitPluginToRouteAsync(routeId, 60);
-        await kong.AddJwtPluginToRouteAsync(routeId);
-        await kong.AddCorsPluginToRouteAsync(routeId);
-        logger.LogInformation(" Plugins attached to: {Path}", path);
-    }
-    else
-    {
-        logger.LogWarning(" Route ID not found for path: {Path}", path);
+        var routeId = await kong.GetRouteIdByPathAsync(path);
+        if (!string.IsNullOrEmpty(routeId) && route.plugins != null)
+        {
+            foreach (var plugin in route.plugins)
+            {
+                logger.LogInformation("Adding plugin: {Plugin}", plugin.Name);
+                await kong.AddPluginToRouteAsync(routeId, plugin);
+            }
+        }
     }
 }
 
-// 3: Create consumer
-logger.LogInformation(" Creating Kong consumer and JWT credentials...");
-
-await kong.CreateConsumerAsync("smart-client");
-await kong.CreateJwtCredentialAsync("smart-client", jwtIssuer!, jwtSecret!);
-
-logger.LogInformation(" JWT consumer and credentials configured");
-
-app.UseHttpsRedirection();
+logger.LogInformation("Kong configuration completed. JWT validation enabled via plugins.");
 app.Run();

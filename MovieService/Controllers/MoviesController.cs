@@ -19,7 +19,8 @@ public class MoviesController : ControllerBase
 
    
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
+    // [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] MovieQueryParameters query)
     {
         var (movies, totalCount) = await _movieService.GetAllAsync(query);
