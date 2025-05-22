@@ -1,8 +1,9 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace WatchlistService.Domain.Entities;
 
-[BsonIgnoreExtraElements]
+
 public class MovieItem
 {
     public int MovieId { get; set; }
@@ -13,4 +14,7 @@ public class MovieItem
     public decimal Rating { get; set; }
     public required string PosterUrl { get; set; } 
     public required string VideoUrl { get; set; }
+    
+    [BsonExtraElements]
+    public BsonDocument ExtraElements { get; set; } = new();
 }

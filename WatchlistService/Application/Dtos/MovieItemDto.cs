@@ -10,4 +10,6 @@ public class MovieItemDto
     public decimal Rating { get; set; }
     public string PosterUrl { get; set; } = null!;
     public string VideoUrl { get; set; } = null!;
+    
+    public Dictionary<string, object>? ExtraFields { get; set; }
 }
