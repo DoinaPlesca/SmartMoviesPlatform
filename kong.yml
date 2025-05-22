@@ -1,0 +1,252 @@
+---
+_format_version: '3.0'
+
+consumers:
+  - username: auth-users
+    custom_id: shared-consumer
+
+jwt_secrets:
+  - consumer: auth-users
+    key: "tN17KaO="
+    secret: "4EMxh8ZDpQOpSIuUbuvSCISQoZdcKHJFzhwGZsONX0A="
+    algorithm: HS256
+
+
+
+services:
+  - name: movie-service
+    url: http://movie-service:8080
+    protocol: http
+    routes:
+      - name: get-movies
+        paths:
+          - "/movies"
+        methods:
+          - GET
+        plugins:
+          - name: jwt
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/movies"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+
+      
+      - name: post-movie
+        paths:
+          - "/movies"
+        methods:
+          - POST
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/movies"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+                    
+                    
+      - name: get-movie-by-id
+        paths:
+          - ~/movies/(?<id>\d+)
+        methods:
+          - GET
+        strip_path: false
+        plugins:
+          - name: jwt
+          - name: request-transformer
+#          - name: request-transformer-advanced
+            config:
+              replace:
+                uri: "/api/movies"
+#                uri: "/api/movies/$(uri_captures['id'])"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+      
+      
+      
+      
+      - name: delete-movie-by-id
+        paths:
+          - "/movies/{id}"
+        methods:
+          - DELETE
+        strip_path: false
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/movies/${id}"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+                    
+                    
+      - name: put-movie-by-id
+        paths:
+          - "/movies/{id}"
+        methods:
+          - PUT
+        strip_path: false
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/movies/${id}"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+                    
+                    
+      - name: get-movie-by-genre
+        paths:
+          - "/movies/genre/{genreId}"
+        methods:
+          - GET
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 10
+              policy: local
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/movies/genre/${genreId}"
+                
+                
+  - name: watchlist-service
+    url: http://watchlist-service:8080
+    protocol: http
+    routes:
+      - name: get-watchlist
+        paths:
+          - "/watchlist/{userId}"
+        methods:
+          - GET
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/watchlist/${userId}"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+                    
+                    
+      - name: post-watchlist
+        paths:
+          - "/watchlist/{userId}"
+        methods:
+          - POST
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/watchlist/${userId}"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"     
+          - name: rate-limiting
+            config:
+              minute: 10
+              policy: local
+              
+              
+      - name: delete-watchlist
+        paths:
+          - "/watchlist/{userId}"
+        methods:
+          - DELETE
+        plugins:
+          - name: jwt
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/watchlist/${userId}"
+              add:
+                headers:
+                  - "X-UserId:$jwt_claim_sub"
+                  - "X-Username:$jwt_claim_name"
+          - name: rate-limiting
+            config:
+              minute: 10
+              policy: local
+              
+              
+              
+  - name: auth-service
+    url: http://auth-service:8080
+    protocol: http
+    routes:
+      - name: auth-login
+        paths:
+          - "/auth/login"
+        strip_path: true
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/auth/login
+          - name: rate-limiting
+            config:
+              minute: 10
+              policy: local
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - POST
+                - OPTIONS
+              headers:
+                - Content-Type
+              credentials: false
+              max_age: 3600
+      - name: auth-register
+        paths:
+          - "/auth/register"
+        methods:
+          - POST
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 5
+              policy: local
+          - name: request-transformer
+            config:
+              replace:
+                uri: "/api/auth/register"
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - POST
+                - OPTIONS
+              headers:
+                - Content-Type
+              credentials: false
+              max_age: 3600
