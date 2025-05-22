@@ -58,22 +58,26 @@ services:
                     
       - name: get-movie-by-id
         paths:
-          - "/movies/{id}"
+          - ~/movies/(?<id>\d+)
         methods:
           - GET
         strip_path: false
         plugins:
           - name: jwt
           - name: request-transformer
+#          - name: request-transformer-advanced
             config:
               replace:
-                uri: "/api/v1/movies/{id}"
+                uri: "/api/movies"
+#                uri: "/api/movies/$(uri_captures['id'])"
               add:
                 headers:
                   - "X-UserId:$jwt_claim_sub"
                   - "X-Username:$jwt_claim_name"
-                    
-                    
+      
+      
+      
+      
       - name: delete-movie-by-id
         paths:
           - "/movies/{id}"
