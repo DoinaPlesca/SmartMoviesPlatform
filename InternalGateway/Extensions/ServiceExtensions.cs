@@ -1,5 +1,4 @@
 using Ocelot.DependencyInjection;
-using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
 using SharedKernel.Extensions;
 
@@ -16,13 +15,5 @@ public static class ServiceExtensions
         services.AddOcelot(configuration).AddPolly();
 
         return services;
-    }
-
-    public static WebApplication UseApiGateway(this WebApplication app)
-    {
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.UseOcelot().Wait();
-        return app;
     }
 }

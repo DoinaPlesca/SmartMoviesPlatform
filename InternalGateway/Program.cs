@@ -5,11 +5,12 @@ using Ocelot.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
-// logging from Ocelot
+//debug filters
 builder.Logging.AddFilter("Ocelot.Middleware", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.Configuration", LogLevel.Debug);
 builder.Logging.AddFilter("Ocelot.Errors", LogLevel.Debug);
@@ -46,7 +47,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-// Route logging
+// Log configured routes from config
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation(" API Gateway started. Listening on /auth, /movies, /watchlist etc.");
 
@@ -68,7 +69,6 @@ catch (Exception ex)
 {
     logger.LogError(ex, " Ocelot failed to start or route properly");
 }
-
 app.Run();
 
 
