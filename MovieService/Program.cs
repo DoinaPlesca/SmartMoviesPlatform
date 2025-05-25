@@ -10,13 +10,23 @@ using MovieService.Infrastructure.Persistence.Interfaces;
 using MovieService.Infrastructure.Persistence.Repositories;
 using MovieService.Infrastructure.Persistence.Seeders;
 using MovieService.Infrastructure.Storage;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Prometheus;
+using Serilog;
 using SharedKernel.Extensions;
 using SharedKernel.Interfaces;
 using SharedKernel.Middleware;
 
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Seq("http://seq")
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.UseSerilog();
 DotNetEnv.Env.Load();
 builder.Services.AddOpenApi();
 
@@ -60,10 +70,40 @@ builder.Services.AddSwaggerGen(options =>
     options.SupportNonNullableReferenceTypes();
 });
 
+
+//  Configure OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(traceBuilder =>
+    {
+        traceBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("MovieService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddZipkinExporter(options =>
+            {
+                options.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+            });
+    })
+    .WithMetrics(metricBuilder =>
+    {
+        metricBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("MovieService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddPrometheusExporter();;
+    });
+
+
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseMetricServer();
+app.UseHttpMetrics();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.UseSerilogRequestLogging();
 
 
 using (var scope = app.Services.CreateScope())

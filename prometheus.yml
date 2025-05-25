@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'movie-service'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['movie-service:8080']
+    
+  - job_name: 'auth-service'
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ 'auth-service:8080' ]
+
+  - job_name: 'watchlist-service'
+    metrics_path: /metrics
+    static_configs:
+    - targets: [ 'watchlist-service:8080' ]
+  

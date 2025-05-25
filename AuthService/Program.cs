@@ -13,6 +13,7 @@ using DotNetEnv;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
 using SharedKernel.Middleware;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -64,6 +65,8 @@ using (var scope = app.Services.CreateScope())
     var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
     await initializer.InitializeAsync();
 }
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseSwagger();
 app.UseSwaggerUI();

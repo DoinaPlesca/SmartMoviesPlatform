@@ -1,4 +1,5 @@
 
+using Prometheus;
 using SharedKernel.Extensions;
 using SharedKernel.Middleware;
 using WatchlistService.Application.Interfaces;
@@ -37,7 +38,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
-
+app.UseMetricServer();
+app.UseHttpMetrics();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
