@@ -1,4 +1,4 @@
-version: '3.9'
+
 
 services:
 
@@ -71,17 +71,21 @@ services:
     build:
       context: .
       dockerfile: MovieService/Dockerfile
-    container_name: movie-service
+#    container_name: movie-service
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
-    ports:
-      - "5001:8080"
+#    ports:
+#      - "5001:8080"
     env_file:
       - .env
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
     networks:
       - smart_movie_network
 

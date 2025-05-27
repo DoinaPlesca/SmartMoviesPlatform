@@ -1,0 +1,52 @@
+
+name: CI/CD - SmartMoviePlatform
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push AuthService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./AuthService
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
+
+      - name: Build and push MovieService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./MovieService
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/movie-service:latest
+
+      - name: Build and push WatchlistService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./WatchlistService
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/watchlist-service:latest
+
+      - name: Build and push InternalGateway
+        uses: docker/build-push-action@v5
+        with:
+          context: ./InternalGateway
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/gateway:latest

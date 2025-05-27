@@ -13,7 +13,17 @@
         "EnableRateLimiting": true,
         "Period": "1m",
         "Limit": 10
-      }
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "DelegatingHandlers": [ "FallbackHandler" ]
+
     },
     {
       "UpstreamPathTemplate": "/auth/register",
@@ -28,7 +38,17 @@
         "EnableRateLimiting": true,
         "Period": "1m",
         "Limit": 5
-      }
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "DelegatingHandlers": [ "FallbackHandler" ]
+
     }
   ]
 }
