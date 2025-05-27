@@ -1,4 +1,3 @@
-
 name: CI/CD - SmartMoviePlatform
 
 on:
@@ -26,27 +25,31 @@ jobs:
       - name: Build and push AuthService
         uses: docker/build-push-action@v5
         with:
-          context: ./AuthService
+          context: .
+          file: ./AuthService/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
 
       - name: Build and push MovieService
         uses: docker/build-push-action@v5
         with:
-          context: ./MovieService
+          context: .
+          file: ./MovieService/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/movie-service:latest
 
       - name: Build and push WatchlistService
         uses: docker/build-push-action@v5
         with:
-          context: ./WatchlistService
+          context: .
+          file: ./WatchlistService/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/watchlist-service:latest
 
       - name: Build and push InternalGateway
         uses: docker/build-push-action@v5
         with:
-          context: ./InternalGateway
+          context: .
+          file: ./InternalGateway/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/gateway:latest
