@@ -1,3 +1,4 @@
+using InternalGateway.Handlers;
 using Ocelot.DependencyInjection;
 using Ocelot.Provider.Polly;
 using SharedKernel.Extensions;
@@ -11,6 +12,7 @@ public static class ServiceExtensions
         DotNetEnv.Env.Load();
         
         services.AddJwtAuthentication(configuration);
+        services.AddTransient<FallbackHandler>();
 
         services.AddOcelot(configuration).AddPolly();
 

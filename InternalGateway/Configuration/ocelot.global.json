@@ -13,14 +13,6 @@
       "UseCookieContainer": false,
       "UseTracing": false
     },
-    "QoSOptions": {
-      "ExceptionsAllowedBeforeBreaking": 3,
-      "DurationOfBreak": 10000,
-      "TimeoutValue": 5000
-    },
-    "LoadBalancerOptions": {
-      "Type": "RoundRobin"
-    },
     "DownstreamScheme": "http"
   }
 }

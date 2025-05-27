@@ -1,10 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AuthService.Application.Interfaces;
-using AuthService.Application.Services;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Security;
@@ -12,12 +9,25 @@ using AuthService.Infrastructure.Services;
 using DotNetEnv;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Prometheus;
+using Serilog;
 using SharedKernel.Middleware;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Seq("http://seq") 
+    .WriteTo.Console()
+    .CreateLogger();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
+
+Log.Information("🚀 Starting up AuthService...");
 
 Env.Load("../.env");
 
@@ -57,6 +67,29 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//  Configure OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(traceBuilder =>
+    {
+        traceBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AuthService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddZipkinExporter(options =>
+            {
+                options.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+            });
+    })
+    .WithMetrics(metricBuilder =>
+    {
+        metricBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AuthService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddPrometheusExporter();;
+    });
+
+
 var app = builder.Build(); 
 
 using (var scope = app.Services.CreateScope())
@@ -64,6 +97,11 @@ using (var scope = app.Services.CreateScope())
     var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
     await initializer.InitializeAsync();
 }
+
+app.UseMetricServer();
+app.UseHttpMetrics();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.UseSerilogRequestLogging();
 
 app.UseSwagger();
 app.UseSwaggerUI();
