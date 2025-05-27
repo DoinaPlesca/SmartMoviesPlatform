@@ -76,7 +76,7 @@ jobs:
       - name: Deploy WatchlistService to Azure
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'watchlistservice'
+          app-name: 'watchlist-service'
           publish-profile: ${{ secrets.AZURE_WATCHLIST_PUBLISH_PROFILE }}
           images: '${{ secrets.DOCKER_USERNAME }}/watchlist-service:latest'
 
@@ -86,3 +86,4 @@ jobs:
           app-name: 'gateway-app'
           publish-profile: ${{ secrets.AZURE_GATEWAY_PUBLISH_PROFILE }}
           images: '${{ secrets.DOCKER_USERNAME }}/gateway:latest'
+  
