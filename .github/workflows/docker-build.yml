@@ -53,3 +53,36 @@ jobs:
           file: ./InternalGateway/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/gateway:latest
+  
+  
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy AuthService to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'authservice-app'
+          publish-profile: ${{ secrets.AZURE_AUTH_PUBLISH_PROFILE }}
+          images: '${{ secrets.DOCKER_USERNAME }}/auth-service:latest'
+
+      - name: Deploy MovieService to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'movieservice-app'
+          publish-profile: ${{ secrets.AZURE_MOVIE_PUBLISH_PROFILE }}
+          images: '${{ secrets.DOCKER_USERNAME }}/movie-service:latest'
+
+      - name: Deploy WatchlistService to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'watchlistservice'
+          publish-profile: ${{ secrets.AZURE_WATCHLIST_PUBLISH_PROFILE }}
+          images: '${{ secrets.DOCKER_USERNAME }}/watchlist-service:latest'
+
+      - name: Deploy InternalGateway to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'gateway-app'
+          publish-profile: ${{ secrets.AZURE_GATEWAY_PUBLISH_PROFILE }}
+          images: '${{ secrets.DOCKER_USERNAME }}/gateway:latest'
