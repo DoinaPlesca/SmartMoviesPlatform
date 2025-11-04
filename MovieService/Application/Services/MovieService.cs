@@ -210,8 +210,6 @@ private void LogFinalResult(int totalCount, MovieQueryParameters query)
         {
             Console.WriteLine($"Queued event: {e.GetType().Name} | ID: {((dynamic)e).Id}");
         }
-//ASYNCRONOUS 
-
         await DomainEventDispatcher.DispatchAndClearEventsAsync(existing, _eventPublisher, "movies");
         
         existing.ClearDomainEvents();
