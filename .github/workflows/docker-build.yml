@@ -63,8 +63,7 @@ jobs:
         with:
           app-name: 'authservice-app'
           publish-profile: ${{ secrets.AZURE_AUTH_PUBLISH_PROFILE }}
-          images: 'doina1992/auth-service:latest'
-          is-linux: true
+          package: .
       
       
 
